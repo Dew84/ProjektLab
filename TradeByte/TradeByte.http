@@ -1,0 +1,6 @@
+@TradeByte_HostAddress = http://localhost:5209
+
+GET {{TradeByte_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
