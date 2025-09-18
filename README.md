@@ -28,10 +28,15 @@ Termék állapot (új, újszerű, használt, stb..) -> csak ötlet,
 ,
 
 Ütemterv:
+
 Októberre
 Felhasználó kezelés
 Hirdetések létrehozása (szerkesztés és törlés is),
 Hirdetések ki listázása,
+
+1. BDávid - Database,modell
+2. MDávid - Interface
+3. Oli - Controller
 ,
 ,
 Decemberre
@@ -57,3 +62,5 @@ Adatbázis: sqlite,
 ,
 Adatbázis sémát,
 Funkciók specifikációját
+
+
