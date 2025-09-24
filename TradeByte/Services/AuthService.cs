@@ -122,7 +122,7 @@ namespace TradeByte.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username ?? string.Empty),
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
-                // FIGYELEM: itt szöveges role claim kelljen az Authorize(Roles="Admin") miatt
+                //itt szöveges role claim kelljen az Authorize(Roles="Admin") miatt
                 new Claim(ClaimTypes.Role, (user.Role?.Name.ToString() ?? "User"))
             };
 

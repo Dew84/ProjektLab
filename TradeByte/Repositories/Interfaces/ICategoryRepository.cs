@@ -17,15 +17,13 @@ namespace TradeByte.Repositories.Interfaces
 
         Task<List<Category>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default);
 
-
         Task<bool> ExistsAsync(int id, CancellationToken ct = default);
 
         Task AddAsync(Category category, CancellationToken ct = default);
         Task UpdateAsync(Category category, CancellationToken ct = default);
         Task RemoveAsync(Category category, CancellationToken ct = default);
 
-        // Alternatíva, ha stub entitásokat akarsz bekötni (?)
+        // Alternatíva, ha stub entitásokat akarsz bekötni
         void AttachRange(IEnumerable<Category> categories);
     }
 }
-

@@ -26,7 +26,7 @@ namespace TradeByte.Services
             _current = current;
         }
 
-        // Helper: aktuális userId int-ként (ICurrentUser.UserId string -> int)
+        //  aktuális userId int-ként (ICurrentUser.UserId string -> int)
         private int CurrentUserId
         {
             get
