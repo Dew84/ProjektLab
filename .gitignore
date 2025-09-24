@@ -384,3 +384,13 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/TradeByte/Services/MessageService.cs
+/TradeByte/Services/Interfaces/IMessageService.cs
+/TradeByte/Dtos/Messages/CreateMessageDto.cs
+/TradeByte/Dtos/Messages/MessageDto.cs
+/TradeByte/Dtos/Ratings/CreateRatingDto.cs
+/TradeByte/Dtos/Ratings/RatingDto.cs
+/TradeByte/Services/Interfaces/IRatingService.cs
+/TradeByte/Models/Rating.cs
+/TradeByte/Models/Message.cs
+/TradeByte/Services/Ratingservice.cs
