@@ -17,7 +17,9 @@ namespace TradeByte.Models
         /// </summary>
         public required string Name { get; set; }
 
-        // Visszamutató navigáció a many-to-many-hoz kategoria->hirdetes kapcsolathoz MD
+        /// <summary>
+        /// Many-to-many kapcsolat a hirdetésekkel
+        /// </summary>
         public List<Classified> Classifieds { get; set; } = new();
     }
 }

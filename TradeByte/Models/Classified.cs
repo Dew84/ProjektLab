@@ -43,14 +43,13 @@ namespace TradeByte.Models
         public List<Picture> Pictures { get; set; } = new List<Picture>();
 
         /// <summary>
-        /// Hirdetés kategóriái
+        /// Many-to-many kapcsolat a kategóriákkal
         /// </summary>
         public List<Category> Categories { get; set; } = new List<Category>();
 
         /// <summary>
         /// Hirdetést létrehozó felhasználó
         /// </summary>
-        public User User { get; set; }
-       
+        public User User { get; set; } = null!;
     }
 }

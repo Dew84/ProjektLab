@@ -5,11 +5,20 @@ namespace TradeByte.Context
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
-       public DbSet<User> Users { get; set; }
-       public DbSet<Role> Roles { get; set; }
-       public DbSet<Classified> Classifieds { get; set; }
-       public DbSet<Picture> Pictures { get; set; }
-       public DbSet<Category> Categories { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<Classified> Classifieds { get; set; }
+        public DbSet<Picture> Pictures { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // EF Core automatikusan létrehoz egy CategoryClassified junction table-t
+            modelBuilder.Entity<Classified>()
+                .HasMany(c => c.Categories)
+                .WithMany(c => c.Classifieds);
+        }
     }
 }
