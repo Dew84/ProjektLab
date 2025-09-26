@@ -34,7 +34,7 @@ namespace TradeByte.Migrations
 
                     b.HasIndex("ClassifiedId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("TradeByte.Models.Classified", b =>
@@ -64,7 +64,7 @@ namespace TradeByte.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Classifieds");
+                    b.ToTable("Classifieds", (string)null);
                 });
 
             modelBuilder.Entity("TradeByte.Models.Picture", b =>
@@ -84,7 +84,7 @@ namespace TradeByte.Migrations
 
                     b.HasIndex("ClassifiedId");
 
-                    b.ToTable("Pictures");
+                    b.ToTable("Pictures", (string)null);
                 });
 
             modelBuilder.Entity("TradeByte.Models.Role", b =>
@@ -98,7 +98,7 @@ namespace TradeByte.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("TradeByte.Models.User", b =>
@@ -132,7 +132,7 @@ namespace TradeByte.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("TradeByte.Models.Category", b =>
