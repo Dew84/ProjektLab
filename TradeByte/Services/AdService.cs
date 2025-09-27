@@ -52,7 +52,6 @@ namespace TradeByte.Services
             if (dto is null) throw new ArgumentNullException(nameof(dto));
             var userId = CurrentUserId;
 
-            // Alap validációk (bővíthető)
             if (string.IsNullOrWhiteSpace(dto.Title))
                 throw new ArgumentException("Title is required.", nameof(dto));
             if (dto.Price < 0)
@@ -65,23 +64,25 @@ namespace TradeByte.Services
                 Price = dto.Price,
                 CreatedAt = DateTime.UtcNow,
                 UserId = userId,
-                // Categories: m2m – lásd TODO
+                // Categories feltöltése lent
             };
 
-            // (Opcionális) Kategória ID-k ellenőrzése – most csak létezést validálunk
+            // --- Kategóriák hozzárendelése (M2M) ---
             if (dto.CategoryIds is { Count: > 0 })
             {
-                
-                // inkább csak ellenőrzünk és későbbre hagyjuk a tényleges hozzárendelést.
-                foreach (var catId in dto.CategoryIds.Distinct())
-                {
-                    var cat = await _categories.GetByIdAsync(catId, ct);
-                    if (cat is null)
-                        throw new ArgumentException($"Category #{catId} not found.", nameof(dto.CategoryIds));
-                }
+                var ids = dto.CategoryIds.Where(id => id > 0).Distinct().ToList();
 
-                // TODO (később): a tényleges m2m hozzárendelést repositoryn/DbContexten keresztül,
-                // pl. külön CategoryRepository metódussal vagy a DbContext attach-hel. (?)
+                // Lekérjük a létező kategóriákat TRACKELT állapotban
+                var categories = await _categories.GetByIdsAsync(ids, ct);
+
+                // Validáció: minden kért ID létezzen
+                var found = categories.Select(c => c.Id).ToHashSet();
+                var missing = ids.Where(id => !found.Contains(id)).ToList();
+                if (missing.Count > 0)
+                    throw new KeyNotFoundException("Ismeretlen kategória ID(k): " + string.Join(", ", missing));
+
+                // Hozzákötjük a kategóriákat az új hirdetéshez
+                entity.Categories = new List<Category>(categories);
             }
 
             await _ads.AddAsync(entity, ct);
@@ -89,6 +90,7 @@ namespace TradeByte.Services
 
             return entity.Id;
         }
+
 
         public async Task<bool> UpdateAsync(int adId, UpdateAdDto dto, CancellationToken ct = default)
         {
