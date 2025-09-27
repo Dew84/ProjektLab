@@ -35,8 +35,9 @@ Hirdetések létrehozása (szerkesztés és törlés is),
 Hirdetések ki listázása,
 
 1. BDávid - Database,modell
-2. MDávid - Interface
+2. MDávid - Interface 
 3. Oli - Controller
+4. BDávid - Regisztráció, Bejelentkezés, Főoldal
 ,
 ,
 ,
