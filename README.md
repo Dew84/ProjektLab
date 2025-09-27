@@ -61,7 +61,7 @@ Saját adatok megtekintése + módosítása.
 
 6. Kategóriák kezelése (Categories)
 Egyszerű lista a kategóriák kiválasztásához.
-(Kezdő szinten elég csak lekérdezni, admin CRUD később jöhet.)
+(elég csak lekérdezni, admin CRUD később jöhet.)
 
 7. EXTRA1 -  Hirdetés részletező oldal (Ad Details)
 Egy konkrét hirdetés részletei.
