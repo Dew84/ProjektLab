@@ -29,10 +29,68 @@ Termék állapot (új, újszerű, használt, stb..) -> csak ötlet,
 
 Ütemterv:
 
-Októberre
+Októberre:
+Backend-->
 Felhasználó kezelés
 Hirdetések létrehozása (szerkesztés és törlés is),
 Hirdetések ki listázása,
+
+Frontend-->
+1. Login / Register oldal
+Login: email + jelszó → JWT token a localStorage-be.
+Register: felhasználónév, email, jelszó → automatikus login vagy visszairányítás login oldalra.
+API:
+POST /api/Auth/register
+POST /api/Auth/login
+
+2. Hirdetés lista oldal (Public Ads List)
+Minden látogató láthatja.
+Keresőmező + kategória szűrő (opcionális).
+Lapozás (PagedResult).
+Az eladó adatai csak belépett usernek jelenjenek meg.
+API:
+GET /api/Ads (paraméterek: categoryId, page, pageSize)
+
+3. Saját hirdetéseim (My Ads)
+Csak belépett user fér hozzá.
+Listázás + gombok: szerkesztés / törlés.
+API:
+GET /api/Ads/mine
+PUT /api/Ads/{id}
+DELETE /api/Ads/{id}
+
+4. Hirdetés létrehozása / szerkesztése (Create/Edit Ad)
+Form mezők: cím, leírás, ár, kategória kiválasztás (multiselect).
+API:
+POST /api/Ads
+PUT /api/Ads/{id}
+
+5. Profil oldal (My Profile)
+Saját adatok megtekintése + módosítása.
+API:
+GET /api/Users/me
+PUT /api/Users/me
+
+6. Kategóriák kezelése (Categories)
+Egyszerű lista a kategóriák kiválasztásához.
+(Kezdő szinten elég csak lekérdezni, admin CRUD később jöhet.)
+API:
+GET /api/Categories
+
+7. EXTRA1 -  Hirdetés részletező oldal (Ad Details)
+Egy konkrét hirdetés részletei.
+Belépett user → látja az eladó nevét.
+API:
+GET /api/Ads/{id}
+
+8. EXTRA2 - Admin felület (Admin only)
+Csak Admin role jogosultsággal.
+Funkciók:
+Felhasználók listázása + törlése
+GET /api/Users
+DELETE /api/Users/{id}
+Hirdetések törlése (bárki hirdetése)
+DELETE /api/Ads/{id}
 
 1. BDávid - Database,modell
 2. MDávid - Interface 
