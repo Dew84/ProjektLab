@@ -38,15 +38,13 @@ Hirdetések ki listázása,
 2. MDávid - Interface 
 3. Oli - Controller
 4. BDávid - Regisztráció, Bejelentkezés, Főoldal
-,
-,
-,
+
+
 Decemberre
 Keresés
 Üzenetküldés,
 Minden maradék,
-,
-,
+
 
 2 hetente Orosz Ákossal egyeztetés az aktuális helyzetről.
 Kövi: 2025.09.29 17:15
