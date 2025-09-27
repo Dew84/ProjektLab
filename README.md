@@ -36,6 +36,7 @@ Hirdetések létrehozása (szerkesztés és törlés is),
 Hirdetések ki listázása,
 
 Frontend-->
+
 0.Főoldal
 
 1. Login / Register oldal
