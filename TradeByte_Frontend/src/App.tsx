@@ -1,26 +1,22 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "@mantine/core/styles.css";
+import { MantineProvider } from "@mantine/core";
+import { theme } from "./theme";
+import {BrowserRouter} from "react-router-dom";
+import { AuthContext } from "./context/AuthContext";
+import Routing from "./routing/Routing.tsx";
+import {useState} from "react";
+import {usernameKeyName, tokenKeyName, roleKeyName} from "./constants/constants.ts";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+    const [token, setToken] = useState(localStorage.getItem(tokenKeyName));
+    const [username, setUsername] = useState(localStorage.getItem(usernameKeyName));
+    const [role, setRole] = useState(localStorage.getItem(roleKeyName));
+
+    return <MantineProvider theme={theme}>
+        <BrowserRouter>
+            <AuthContext.Provider value={{ token, setToken, username, setUsername, role, setRole }}>
+                <Routing/>
+            </AuthContext.Provider>
+        </BrowserRouter>
+    </MantineProvider>;
 }
-
-export default App;
