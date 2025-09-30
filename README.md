@@ -69,11 +69,6 @@ Listázás + gombok: szerkesztés / törlés.
 Hirdetés létrehozása (Create)
 Form mezők: cím, leírás, ár, kategória kiválasztás (multiselect).
 
-a.
-
-
-
-
 8. EXTRA2 - Admin felület (Admin only)
 Csak Admin role jogosultsággal.
 Funkciók:
