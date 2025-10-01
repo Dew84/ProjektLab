@@ -1,14 +1,17 @@
-import './App.css'
+import React, { useState } from 'react';
+import Navbar from './components/Navbar';
+import HomePage from './pages/HomePage';
+import './App.css';
 
 function App() {
+  const [user, setUser] = useState(null);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>TradeByte</h1>
-        <p>Ez a kezdőlap</p>
-      </header>
+      <Navbar user={user} setUser={setUser} />
+      <HomePage />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
