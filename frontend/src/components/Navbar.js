@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Navbar.css';
 
-function Navbar({ user, setUser }) {
+function Navbar({ user, setUser, setCurrentPage }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleNewAd = () => {
@@ -18,11 +18,11 @@ function Navbar({ user, setUser }) {
   };
 
   const handleLogin = () => {
-    console.log('Login oldal megnyitása');
+    setCurrentPage('login');
   };
 
   const handleRegister = () => {
-    console.log('Register oldal megnyitása');
+    setCurrentPage('register');
   };
 
   const handleAdminPanel = () => {
@@ -30,11 +30,12 @@ function Navbar({ user, setUser }) {
   };
 
   const handleLogoClick = () => {
-    console.log('Főoldal');
+    setCurrentPage('home');
   };
 
   const handleLogout = () => {
     setUser(null);
+    setCurrentPage('home');
   };
 
   return (
@@ -63,7 +64,6 @@ function Navbar({ user, setUser }) {
             ➕ Új hirdetés
           </button>
 
-          {/* ADMIN GOMB - csak adminnak látszik */}
           {user && user.role === 'Admin' && (
             <button className="navbar-button admin-btn" onClick={handleAdminPanel}>
               ⚙️ Admin feladatok
