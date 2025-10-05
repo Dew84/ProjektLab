@@ -22,6 +22,7 @@ namespace TradeByte.Services
         private readonly IUnitOfWork _uow;
         private readonly ICurrentUser _current;
         private readonly ICategoryRepository _categories; // validációhoz / későbbi m2m frissítéshez jól jöhet
+        private readonly IUserRepository _user;
 
         public AdService(
             IAdRepository ads,
@@ -49,7 +50,10 @@ namespace TradeByte.Services
 
         public async Task<int> CreateAsync(CreateAdDto dto, CancellationToken ct = default)
         {
-            if (dto is null) throw new ArgumentNullException(nameof(dto));
+            //User? user = await _user.GetByIdAsync(dto.UserId, ct)
+              //          ?? throw new ArgumentException("Invalid user ID.", nameof(dto.UserId));
+
+                if (dto is null) throw new ArgumentNullException(nameof(dto));
             var userId = CurrentUserId;
 
             if (string.IsNullOrWhiteSpace(dto.Title))

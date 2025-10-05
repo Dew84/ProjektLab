@@ -29,6 +29,7 @@ namespace TradeByte
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+            builder.Services.AddScoped<IPictureService, PictureService>();
             /*builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IRatingService, RatingService>();*/
 
@@ -36,6 +37,7 @@ namespace TradeByte
             builder.Services.AddScoped<IAdRepository, AdRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IPictureRepository, PictureRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // HttpContextAccessor a CurrentUser szolgáltatáshoz

@@ -10,6 +10,7 @@ namespace TradeByte.Dtos.Ads
         public string Title { get; set; } = "";
         public string Description { get; set; } = "";
         public decimal Price { get; set; }
+        public int UserId { get; set; } 
         public List<int> CategoryIds { get; set; } = new(); // m2m kapcsolat
         //képek?
     }

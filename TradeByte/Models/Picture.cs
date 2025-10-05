@@ -5,6 +5,12 @@ namespace TradeByte.Models
 {
     public class Picture
     {
+        public Picture(string fileName, int classifiedId)
+        {
+            FileName = fileName;
+            ClassifiedId = classifiedId;
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
@@ -12,7 +18,7 @@ namespace TradeByte.Models
         /// <summary>
         /// Kép fájlneve
         /// </summary>
-        public required string FileName { get; set; }
+        public string FileName { get; set; }
 
         /// <summary>
         /// Képhez tartozó hirdetés id-ja
@@ -22,7 +28,7 @@ namespace TradeByte.Models
         /// <summary>
         /// Képhez tartozó hirdetés
         /// </summary>
-        public Classified Classified { get; set; }
+        public Classified? Classified { get; set; }        
     }
 }
 
