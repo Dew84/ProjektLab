@@ -1,71 +1,73 @@
+// src/services/authService.js
 import api from './api';
+import userService from './userService';
 
 const authService = {
-  // Regisztráció
-  register: async (userData) => {
+  // === REGISZTRÁCIÓ ===
+  register: async ({ userName, email, password }) => {
     try {
-      const response = await api.post('/auth/register', {
-        userName: userData.userName,
-        email: userData.email,
-        password: userData.password,
-      });
-      
-      // Token és user mentése
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      const res = await api.post('/auth/register', { userName, email, password });
+
+      // Ha azonnal kapsz tokent, automatikus beléptetés
+      const token = res?.data?.token;
+      if (token) {
+        localStorage.setItem('token', token);
+        const me = await userService.me();
         localStorage.setItem('user', JSON.stringify({
-          id: response.data.userId,
-          name: response.data.userName,
-          email: response.data.email,
+          id: me.id,
+          userName: me.userName,
+          email: me.email,
         }));
       }
-      
-      return response.data;
+
+      return res.data; // ha nincs token, a UI visszaküldhet a loginra
     } catch (error) {
-      throw error.response?.data?.message || 'Regisztráció sikertelen';
+      throw error?.response?.data?.message || 'Regisztráció sikertelen';
     }
   },
 
-  // Bejelentkezés
-  login: async (credentials) => {
+  // === BEJELENTKEZÉS ===
+  login: async ({ email, password }) => {
     try {
-      const response = await api.post('/auth/login', {
-        email: credentials.email,
-        password: credentials.password,
-      });
-      
-      // Token és user mentése
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      // csak e-mail + jelszó mehet, userName nem támogatott
+      const cleanEmail = (email ?? '').trim().toLowerCase();
+      if (!/\S+@\S+\.\S+/.test(cleanEmail)) {
+        throw new Error('Adj meg érvényes e-mail címet.');
+      }
+
+      const res = await api.post('/auth/login', { email: cleanEmail, password });
+
+      const token = res?.data?.token;
+      if (token) {
+        localStorage.setItem('token', token);
+        const me = await userService.me();
         localStorage.setItem('user', JSON.stringify({
-          id: response.data.userId,
-          name: response.data.userName,
-          email: response.data.email,
+          id: me.id,
+          userName: me.userName,
+          email: me.email,
         }));
       }
-      
-      return response.data;
+
+      return res.data;
     } catch (error) {
-      throw error.response?.data?.message || 'Bejelentkezés sikertelen';
+      throw error?.response?.data?.message || 'Bejelentkezés sikertelen';
     }
   },
 
-  // Kijelentkezés
+  // === KIJELENTKEZÉS ===
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
   },
 
-  // Jelenlegi user lekérése localStorage-ból
+  // === USER LEKÉRÉSE LOKÁLBÓL ===
   getCurrentUser: () => {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   },
 
-  // Token ellenőrzése
-  isAuthenticated: () => {
-    return !!localStorage.getItem('token');
-  },
+  // === TOKEN ELLENŐRZÉS ===
+  isAuthenticated: () => !!localStorage.getItem('token'),
 };
 
 export default authService;

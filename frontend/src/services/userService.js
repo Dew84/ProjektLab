@@ -1,53 +1,54 @@
+// src/services/userServices.js
 import api from './api';
 
 const userService = {
-  // Saját profil
-  getMe: async () => {
+  // Saját profil lekérése
+  me: async () => {
     try {
-      const response = await api.get('/users/me');
-      return response.data;
+      const { data } = await api.get('/users/me');
+      return data; // { id, userName, email, ... }
     } catch (error) {
-      throw error.response?.data?.message || 'Profil betöltése sikertelen';
+      throw error?.response?.data?.message || 'Profil betöltése sikertelen';
     }
   },
 
-  // Profil módosítása
+  // Saját profil módosítása (frissített profilt ad vissza)
   updateMe: async (userData) => {
     try {
-      await api.put('/users/me', userData);
-      return true;
+      const { data } = await api.put('/users/me', userData);
+      return data; // backendtől függően visszajöhet a friss user; ha nem, keep as is
     } catch (error) {
-      throw error.response?.data?.message || 'Profil módosítása sikertelen';
+      throw error?.response?.data?.message || 'Profil módosítása sikertelen';
     }
   },
 
-  // Felhasználó lekérése (admin vagy saját)
+  // (admin) felhasználó lekérése
   getUserById: async (id) => {
     try {
-      const response = await api.get(`/users/${id}`);
-      return response.data;
+      const { data } = await api.get(`/users/${id}`);
+      return data;
     } catch (error) {
-      throw error.response?.data?.message || 'Felhasználó betöltése sikertelen';
+      throw error?.response?.data?.message || 'Felhasználó betöltése sikertelen';
     }
   },
 
-  // Összes felhasználó (admin only)
+  // (admin) összes user
   getAllUsers: async () => {
     try {
-      const response = await api.get('/users');
-      return response.data;
+      const { data } = await api.get('/users');
+      return data;
     } catch (error) {
-      throw error.response?.data?.message || 'Felhasználók betöltése sikertelen';
+      throw error?.response?.data?.message || 'Felhasználók betöltése sikertelen';
     }
   },
 
-  // Felhasználó törlése (admin only)
+  // (admin) törlés
   deleteUser: async (id) => {
     try {
       await api.delete(`/users/${id}`);
       return true;
     } catch (error) {
-      throw error.response?.data?.message || 'Felhasználó törlése sikertelen';
+      throw error?.response?.data?.message || 'Felhasználó törlése sikertelen';
     }
   },
 };
