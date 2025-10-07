@@ -1,7 +1,7 @@
 import React from 'react';
 import ImageGallery from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
-import './AdImageGallery.css'; // 👈 saját stílus importálása
+import './AdImageGallery.css'; 
 
 const API_URL = process.env.REACT_APP_API_URL; 
 const BASE_URL = API_URL.replace(/\/api$/, '');

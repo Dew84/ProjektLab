@@ -4,7 +4,7 @@ import categoryService from "../services/categoryService";
 import pictureService from "../services/pictureService";
 import "./CreateAdPage.css";
 
-function CreateAdPage({setUser, adId}) {
+function CreateAdPage({ setUser, adId }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
@@ -29,9 +29,11 @@ function CreateAdPage({setUser, adId}) {
     fetchCategories();
   }, []);
 
+  console.log("CreateAdPage adId:", adId);
+
   // Meglévő hirdetés betöltése
   useEffect(() => {
-    if (!adId || adId <= 0) return;
+    if (!adId) return;
     const fetchAd = async () => {
       try {
         const ad = await adService.getAdById(adId);
@@ -79,9 +81,9 @@ function CreateAdPage({setUser, adId}) {
         categoryIds: categoryId ? [parseInt(categoryId)] : [],
       };
 
-      const token = localStorage.getItem("token"); 
+      const token = localStorage.getItem("token");
       let resultAd;
-      
+
       if (adId) {
         // Update meglévő hirdetés
         resultAd = await adService.updateAd(adId, adData, token);
@@ -105,7 +107,7 @@ function CreateAdPage({setUser, adId}) {
       }
     } catch (err) {
       console.error(err);
-      setError(err|| "Hiba történt a hirdetés mentése során.");
+      setError(err || "Hiba történt a hirdetés mentése során.");
     } finally {
       setLoading(false);
     }

@@ -1,14 +1,35 @@
 import React from 'react';
 import './AdCard.css';
+import { useState, useEffect } from "react";
+import pictureService from "../services/pictureService";
+
+
+const API_URL = process.env.REACT_APP_API_URL; 
+const BASE_URL = API_URL.replace(/\/api$/, '');
 
 function AdCard({ ad, onClick }) {
+  const [pictures, setPictures] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const picturesData = await pictureService.getPictures(ad.id);
+      setPictures(picturesData);
+    } catch (err) {
+      setError(err.message || "Hiba történt a képek betöltéskor.");
+    }
+  };
+
+  fetchData();
+}, [ad.id]);
 
   return (
-    
+
     <div className="ad-card" onClick={onClick}>
       <div className="ad-card-image">
-        {ad.image ? (
-          <img src={ad.image} alt={ad.title} />
+        {pictures.length > 0 ? (
+          <img src={`${BASE_URL}/images/${ad.id}/${pictures[0].fileName}`} alt={ad.title} />
         ) : (
           <div className="ad-card-placeholder">📦 Nincs kép</div>
         )}

@@ -3,7 +3,7 @@ import './Navbar.css';
 import { User as UserIcon } from 'lucide-react';
 
 
-function Navbar({ user, setUser, setCurrentPage }) {
+function Navbar({ user, setUser, setCurrentPage, setSelectedAdId }) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleNewAd = () => {
@@ -12,6 +12,7 @@ function Navbar({ user, setUser, setCurrentPage }) {
       return;
     }
     console.log('Új hirdetés létrehozása');
+    setSelectedAdId(null);
     setCurrentPage('createAd');
   };
 
