@@ -1,98 +1,87 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import authService from '../services/authService';
+import userService from '../services/userService';
+import './LoginPage.css';
 
-function LoginPage({ setUser, setCurrentPage }) {
-  const [email, setEmail] = useState('');
+export default function LoginPage(props) {
+  const { onLoginSuccess, switchToRegister, setUser, setCurrentPage } = props;
+
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
 
-  const handleSubmit = async (e) => {
+  const afterSuccess = (user) => {
+    if (typeof onLoginSuccess === 'function') return onLoginSuccess(user);
+    if (typeof setUser === 'function') setUser(user);
+    if (typeof setCurrentPage === 'function') setCurrentPage('home');
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      // TODO: Itt lesz majd az API hívás
-      // const result = await authService.login({ email, password });
-      
-      // TESZT - Sikeres login szimuláció
-      console.log('Login:', { email, password, rememberMe });
-      
-      // Teszt user beállítása
-      setUser({
-        id: 1,
-        name: 'Teszt Felhasználó',
-        email: email,
-        role: 'User'
-      });
-      
-      alert('Sikeres bejelentkezés!');
-      setCurrentPage('home');
-      
+      await authService.login({ email, password });
+      const me = await userService.me();
+      localStorage.setItem('user', JSON.stringify(me));
+      afterSuccess(me);
     } catch (err) {
-      setError('Bejelentkezés sikertelen!');
+      const msg = typeof err === 'string'
+          ? err
+          : err?.response?.data?.message || 'Hibás e-mail vagy jelszó.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  const isEmailValid = /\S+@\S+\.\S+/.test(email);
+  const canSubmit = isEmailValid && password.length > 0 && !loading;
+
   return (
-    <div style={{ padding: '50px', maxWidth: '400px', margin: '0 auto' }}>
-      <h2>Bejelentkezés</h2>
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Email:</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label>Jelszó:</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label>
+      <div className="auth-page">
+        <div className="auth-card">
+          <h2>Bejelentkezés</h2>
+
+          <form onSubmit={handleLogin}>
             <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoFocus
             />
-            {' '}Emlékezz rám
-          </label>
+            <input
+                type="password"
+                placeholder="Jelszó"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+            />
+
+            <button type="submit" disabled={!canSubmit}>
+              {loading ? 'Bejelentkezés…' : 'Bejelentkezés'}
+            </button>
+
+            {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
+          </form>
+
+          <p style={{ marginTop: 12 }}>
+            Nincs fiókod?{' '}
+            <button
+                type="button"
+                onClick={() =>
+                    typeof switchToRegister === 'function'
+                        ? switchToRegister()
+                        : typeof setCurrentPage === 'function' && setCurrentPage('register')
+                }
+            >
+              Regisztráció
+            </button>
+          </p>
         </div>
-        
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ padding: '10px 20px', cursor: 'pointer' }}
-        >
-          {loading ? 'Betöltés...' : 'Bejelentkezés'}
-        </button>
-      </form>
-      
-      <p style={{ marginTop: '20px' }}>
-        <a href="/register">Még nincs fiókod? Regisztrálj!</a>
-      </p>
-    </div>
+      </div>
   );
 }
-
-export default LoginPage;

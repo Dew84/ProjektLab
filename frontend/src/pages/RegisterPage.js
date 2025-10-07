@@ -1,116 +1,104 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import authService from '../services/authService';
+import userService from '../services/userService';
+import './LoginPage.css'; // ugyanazt a stílust használhatja, mint a LoginPage
 
-function RegisterPage({ setUser }) {
+export default function RegisterPage(props) {
+  const {
+    onRegisterSuccess,
+    switchToLogin,
+    setUser,
+    setCurrentPage,
+  } = props;
+
   const [userName, setUserName] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [error, setError]       = useState('');
+  const [loading, setLoading]   = useState(false);
 
-  const handleSubmit = async (e) => {
+  const afterSuccess = (user) => {
+    if (typeof onRegisterSuccess === 'function') return onRegisterSuccess(user);
+    if (typeof setUser === 'function') setUser(user);
+    if (typeof setCurrentPage === 'function') setCurrentPage('home');
+  };
+
+  const goLogin = () => {
+    if (typeof switchToLogin === 'function') return switchToLogin();
+    if (typeof setCurrentPage === 'function') return setCurrentPage('login');
+  };
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (password !== confirmPassword) {
-      setError('A jelszavak nem egyeznek!');
-      return;
-    }
-
     setLoading(true);
-
     try {
-      // TODO: Itt lesz majd az API hívás
-      // const result = await authService.register({ userName, email, password });
-      
-      // TESZT - Sikeres regisztráció szimuláció
-      console.log('Register:', { userName, email, password });
-      
-      setUser({
-        id: 1,
-        name: userName,
-        email: email,
-        role: 'User'
-      });
-      
-      alert('Sikeres regisztráció!');
-      
+      const res = await authService.register({ userName, email, password });
+      if (res?.token) {
+        const me = await userService.me();
+        localStorage.setItem('user', JSON.stringify(me));
+        afterSuccess(me);
+      } else {
+        goLogin();
+      }
     } catch (err) {
-      setError('Regisztráció sikertelen!');
+      const msg =
+          typeof err === 'string'
+              ? err
+              : err?.response?.data?.message || 'Regisztráció sikertelen';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  const isEmailValid = /^\S+@\S+\.\S+$/.test(email);
+  const canSubmit =
+      userName.trim().length >= 3 &&
+      isEmailValid &&
+      password.length >= 6 &&
+      !loading;
+
   return (
-    <div style={{ padding: '50px', maxWidth: '400px', margin: '0 auto' }}>
-      <h2>Regisztráció</h2>
-      
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Felhasználónév:</label>
-          <br />
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
+      <div className="auth-page">
+        <div className="auth-card">
+          <h2>Regisztráció</h2>
+
+          <form onSubmit={handleRegister}>
+            <input
+                type="text"
+                placeholder="Felhasználónév"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                required
+            />
+            <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+            />
+            <input
+                type="password"
+                placeholder="Jelszó (min. 6 karakter)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+            />
+            <button type="submit" disabled={!canSubmit}>
+              {loading ? 'Regisztráció…' : 'Regisztráció'}
+            </button>
+            {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
+          </form>
+
+          <p style={{ marginTop: 12 }}>
+            Van már fiókod?{' '}
+            <button type="button" onClick={goLogin}>
+              Bejelentkezés
+            </button>
+          </p>
         </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label>Email:</label>
-          <br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label>Jelszó:</label>
-          <br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          <label>Jelszó megerősítése:</label>
-          <br />
-          <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-        
-        <button 
-          type="submit" 
-          disabled={loading}
-          style={{ padding: '10px 20px', cursor: 'pointer' }}
-        >
-          {loading ? 'Betöltés...' : 'Regisztráció'}
-        </button>
-      </form>
-      
-      <p style={{ marginTop: '20px' }}>
-        <a href="/login">Már van fiókod? Jelentkezz be!</a>
-      </p>
-    </div>
+      </div>
   );
 }
-
-export default RegisterPage;

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import './Navbar.css';
+import { User as UserIcon } from 'lucide-react';
+
 
 function Navbar({ user, setUser, setCurrentPage }) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,12 +86,22 @@ function Navbar({ user, setUser, setCurrentPage }) {
               </button>
             </>
           ) : (
-            <div className="user-info">
-              <span>Üdv, {user.name}!</span>
-              <button className="navbar-button logout-btn" onClick={handleLogout}>
-                Kijelentkezés
-              </button>
-            </div>
+              <div className="user-info">
+                <span>Üdv, </span>
+                <button
+                    className="navbar-button profile-btn"
+                    onClick={() => setCurrentPage('profile')}
+                    title="Profil megnyitása"
+                >
+                  <UserIcon size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                  {user?.userName || user?.name || ''}
+                </button>
+                <button className="navbar-button logout-btn" onClick={handleLogout}>
+                  Kijelentkezés
+                </button>
+              </div>
+
+
           )}
         </div>
       </div>
