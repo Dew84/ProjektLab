@@ -1,0 +1,23 @@
+/* react-image-gallery beépített stílusának kiegészítése */
+.ad-gallery-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.image-gallery-slide img {
+  border-radius: 12px;
+  object-fit: contain;
+  background-color: #000;
+}
+
+.image-gallery-thumbnail img {
+  border-radius: 8px;
+}
+
+.image-gallery-thumbnail.active,
+.image-gallery-thumbnail:hover {
+  border: 2px solid #007bff;
+}

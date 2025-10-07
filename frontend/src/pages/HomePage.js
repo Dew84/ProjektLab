@@ -4,7 +4,7 @@ import categoryService from '../services/categoryService';
 import adService from '../services/adService';
 import './HomePage.css';
 
-function HomePage() {
+function HomePage({ setCurrentPage, setCategoryId , setSelectedAdId }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [adsData, setAdsData] = useState({});
@@ -85,6 +85,12 @@ function HomePage() {
           key={category.id}
           category={category.name}
           ads={adsData[category.name] || []}
+          onViewAll={() => {
+            setCategoryId(category.id);
+            setCurrentPage('adlist');
+          }}
+          setCurrentPage={setCurrentPage}
+          setSelectedAdId={setSelectedAdId}
         />
       ))}
     </div>

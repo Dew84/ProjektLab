@@ -64,7 +64,7 @@ namespace TradeByte
                     };
                 });
 
-            builder.Services.AddAuthorization();
+            //builder.Services.AddAuthorization();
 
             // ====== Swagger/OpenAPI ======
             builder.Services.AddEndpointsApiExplorer();
@@ -128,6 +128,7 @@ namespace TradeByte
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles();
 
             app.UseCors();
 

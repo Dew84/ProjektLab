@@ -1,0 +1,13 @@
+/* Container padding a teljes listához */
+.adlist-page {
+  padding: 24px 16px;
+}
+
+/* PageSizeSelector és a lista közötti tér */
+.page-controls {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 16px;
+}

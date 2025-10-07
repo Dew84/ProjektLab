@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function LoginPage({ setUser }) {
+function LoginPage({ setUser, setCurrentPage }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -28,6 +28,7 @@ function LoginPage({ setUser }) {
       });
       
       alert('Sikeres bejelentkezés!');
+      setCurrentPage('home');
       
     } catch (err) {
       setError('Bejelentkezés sikertelen!');

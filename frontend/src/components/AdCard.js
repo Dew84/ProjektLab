@@ -1,14 +1,11 @@
 import React from 'react';
 import './AdCard.css';
 
-function AdCard({ ad }) {
-  const handleClick = () => {
-    console.log('Hirdetés részletek:', ad.id);
-    // TODO: Navigálás hirdetés részletek oldalra
-  };
+function AdCard({ ad, onClick }) {
 
   return (
-    <div className="ad-card" onClick={handleClick}>
+    
+    <div className="ad-card" onClick={onClick}>
       <div className="ad-card-image">
         {ad.image ? (
           <img src={ad.image} alt={ad.title} />
@@ -21,7 +18,7 @@ function AdCard({ ad }) {
         <p className="ad-card-description">{ad.description}</p>
         <div className="ad-card-footer">
           <span className="ad-card-price">{ad.price.toLocaleString()} Ft</span>
-          <button className="ad-card-button">Részletek</button>
+          <button className="ad-card-button" onClick={onClick}>Részletek</button>
         </div>
       </div>
     </div>

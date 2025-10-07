@@ -10,6 +10,7 @@ function Navbar({ user, setUser, setCurrentPage }) {
       return;
     }
     console.log('Új hirdetés létrehozása');
+    setCurrentPage('createAd');
   };
 
   const handleSearch = (e) => {

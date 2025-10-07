@@ -21,7 +21,7 @@ namespace TradeByte.Controllers
         [HttpGet("{adId:int}")]
         public async Task<IActionResult> GetPictures(int adId, CancellationToken ct)
         {
-            var pictures = await _pictureService.ListAsync(adId, ct);
+            IList<IFormFile> pictures = await _pictureService.ListAsync(adId, ct);
 
             if (pictures == null || pictures.Count == 0)
                 return NotFound(new { message = "Ehhez a hirdetéshez nem tartoznak képek." });

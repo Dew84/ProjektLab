@@ -58,7 +58,7 @@ namespace TradeByte.Services
                         await stream.CopyToAsync(memory);
                     }
                     memory.Position = 0;
-                    IFormFile file = new FormFile(memory, 0, memory.Length, null, pict.FileName)
+                    IFormFile file = new FormFile(memory, 0, memory.Length, pict.FileName, pict.FileName)
                     {
                         Headers = new HeaderDictionary(),
                         ContentType = "application/octet-stream"

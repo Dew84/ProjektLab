@@ -34,14 +34,19 @@ const adService = {
   },
 
   // Új hirdetés létrehozása
-  createAd: async (adData) => {
+  createAd: async (adData, token) => {
     try {
       const response = await api.post('/ads', {
         title: adData.title,
         description: adData.description,
         price: adData.price,
         categoryIds: adData.categoryIds,
-      });
+        userId: adData.userId
+      },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || 'Hirdetés létrehozása sikertelen';
@@ -49,14 +54,20 @@ const adService = {
   },
 
   // Hirdetés módosítása
-  updateAd: async (id, adData) => {
+  updateAd: async (id, adData, token) => {
     try {
-      const response = await api.put(`/ads/${id}`, adData);
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || 'Hirdetés módosítása sikertelen';
-    }
-  },
+      const response = await api.put(
+      `/ads/${id}`,
+      adData,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return response.data;
+  } catch(error) {
+    throw error.response?.data?.message || 'Hirdetés módosítása sikertelen';
+  }
+},
 
   // Hirdetés törlése
   deleteAd: async (id) => {
@@ -68,17 +79,17 @@ const adService = {
     }
   },
 
-  // Keresés
-  searchAds: async (keyword, categoryId = null, page = 1, pageSize = 20) => {
-    try {
-      const response = await api.get('/ads', {
-        params: { keyword, categoryId, page, pageSize },
-      });
-      return response.data;
-    } catch (error) {
-      throw error.response?.data?.message || 'Keresés sikertelen';
-    }
-  },
+    // Keresés
+    searchAds: async (keyword, categoryId = null, page = 1, pageSize = 20) => {
+      try {
+        const response = await api.get('/ads', {
+          params: { keyword, categoryId, page, pageSize },
+        });
+        return response.data;
+      } catch (error) {
+        throw error.response?.data?.message || 'Keresés sikertelen';
+      }
+    },
 };
 
 export default adService;
