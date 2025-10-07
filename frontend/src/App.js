@@ -70,17 +70,20 @@ function App() {
           setCurrentPage={setCurrentPage}
           setSelectedAdId={setSelectedAdId} />;
       case 'adDetails':
-        return <AdDetailPage adId={selectedAdId} />;
+        return <AdDetailPage adId={selectedAdId} setCurrentPage={setCurrentPage}/>;
       case 'createAd':
         return <CreateAdPage setUser={setUser} adId={selectedAdId} />;
       default:
         return (
             <HomePage
+                setCurrentPage={setCurrentPage}
                 user={user}
                 goProfile={() => setCurrentPage('profile')}
                 // ha a HomePage-en vannak ezek a gombok, jó ha átadod:
                 goLogin={() => setCurrentPage('login')}
                 goRegister={() => setCurrentPage('register')}
+                setCategoryId={setCategoryId}
+                setSelectedAdId={setSelectedAdId}
             />
         );
     }
