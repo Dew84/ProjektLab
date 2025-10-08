@@ -81,7 +81,7 @@ namespace TradeByte.Services
             };
         }
 
-        // ---- Helpers: PBKDF2 + JWT ----
+        //PBKDF2 + JWT
 
         private static string HashPassword(string password)
         {
@@ -109,7 +109,7 @@ namespace TradeByte.Services
             return CryptographicOperations.FixedTimeEquals(candidate, storedHash);
         }
 
-        //még hiányos jwt
+
         private string CreateJwt(User user)
         {
             var key = _config["Jwt:Key"] ?? throw new InvalidOperationException("Missing Jwt:Key");

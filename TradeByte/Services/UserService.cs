@@ -26,7 +26,7 @@ namespace TradeByte.Services
             _current = current;
         }
 
-        //  aktuális userId int-ként (ICurrentUser.UserId string -> int)
+        //  aktuális userId int-ként
         private int CurrentUserId
         {
             get
@@ -99,7 +99,7 @@ namespace TradeByte.Services
             return true;
         }
 
-        // ---- Mapping ----
+
         private static UserDto MapToDto(User u) => new UserDto
         {
             Id = u.Id,

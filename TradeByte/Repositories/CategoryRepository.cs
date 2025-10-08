@@ -20,11 +20,11 @@ namespace TradeByte.Repositories
                           .OrderBy(c => c.Name)
                           .ToListAsync(ct);
 
-        // tracked -> jó Update/Delete-hez
+        // jó Update/Delete-hez
         public async Task<Category?> GetByIdAsync(int id, CancellationToken ct = default) =>
             await _context.Categories.FirstOrDefaultAsync(c => c.Id == id, ct);
 
-        // Bővített overload: track & include flag-ekkel
+        // Bővített overload
         public async Task<Category?> GetByIdAsync(int id, bool track, bool includeClassifieds, CancellationToken ct = default)
         {
             IQueryable<Category> q = _context.Categories;
@@ -38,7 +38,7 @@ namespace TradeByte.Repositories
             return await q.FirstOrDefaultAsync(c => c.Id == id, ct);
         }
 
-        // M2M frissítéshez: TRACKELT példányok
+        // M2M frissítéshez: trackelt példányok
         public async Task<List<Category>> GetByIdsAsync(IEnumerable<int> ids, CancellationToken ct = default)
         {
             var list = ids?.Distinct().ToList() ?? new();

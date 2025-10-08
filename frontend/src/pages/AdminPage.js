@@ -1,30 +1,52 @@
 // src/pages/AdminPage.js
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import userService from '../services/userService';
-// (hirdetésekhez adService-t)
-// import adService from '../services/adService';
+import adService from '../services/adService';
 import './AdminPage.css';
 
+//EGYELŐRE ILYEN MARAD KÉSŐBB KÜLÖN OLDALRA KERÜL ÉS BŐVÍTEM TOVÁBBI FUNKCIÓKKAL
+// Minden egy lapra került és jelenleg csak törölni tud (ez volt a tervezett is)
+// csak admin számára elérhető a felület
 export default function AdminPage({ user, onBackHome, setCurrentPage }) {
-    // access guard
+    // admin only
     const isAdmin = (user?.role || user?.Role || user?.roles)?.toString()?.toLowerCase().includes('admin');
 
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [users, setUsers] = useState([]);
     const [uError, setUError] = useState('');
 
-    // hirdetések váz
-    // const [loadingAds, setLoadingAds] = useState(true);
-    // const [ads, setAds] = useState([]);
-    // const [aError, setAError] = useState('');
+    const [loadingAds, setLoadingAds] = useState(true);
+    const [ads, setAds] = useState([]);
+    const [aError, setAError] = useState('');
 
     const goHome = () => {
         if (typeof onBackHome === 'function') return onBackHome();
         if (typeof setCurrentPage === 'function') return setCurrentPage('home');
     };
 
+
+    const usersById = useMemo(
+        () => Object.fromEntries(users.map(u => [u.id, u])),
+        [users]
+    );
+
+
+    // A hirdetés létrehozójának megjelenítése
+    const resolveCreator = (ad) => {
+        // Ha az API ad közvetlen nevet
+        if (ad.sellerDisplayName) return ad.sellerDisplayName;
+
+        // Keresés a betöltött userek között
+        const u = usersById[ad.userId];
+        if (u) return u.userName || u.email || 'Ismeretlen';
+
+        // Ha semmi sincs
+        return 'Ismeretlen';
+    };
+
+
+
     useEffect(() => {
-        // ha nem admin, ne is töltsünk
         if (!isAdmin) return;
 
         (async () => {
@@ -40,19 +62,19 @@ export default function AdminPage({ user, onBackHome, setCurrentPage }) {
             }
         })();
 
-        // Hirdetések később:
-        // (async () => {
-        //   setLoadingAds(true);
-        //   setAError('');
-        //   try {
-        //     const list = await adService.getAll();
-        //     setAds(Array.isArray(list) ? list : []);
-        //   } catch (e) {
-        //     setAError(e?.response?.data?.message || 'Hirdetések betöltése sikertelen.');
-        //   } finally {
-        //     setLoadingAds(false);
-        //   }
-        // })();
+        (async () => {
+            setLoadingAds(true);
+            setAError('');
+            try {
+                const list = await adService.getAds();
+                const items = Array.isArray(list) ? list : (list?.items ?? list?.data ?? []);
+                setAds(items);
+            } catch (e) {
+                setAError(e?.response?.data?.message || 'Hirdetések betöltése sikertelen.');
+            } finally {
+                setLoadingAds(false);
+            }
+        })();
     }, [isAdmin]);
 
     const handleDeleteUser = async (id) => {
@@ -65,15 +87,15 @@ export default function AdminPage({ user, onBackHome, setCurrentPage }) {
         }
     };
 
-    // const handleDeleteAd = async (id) => {
-    //   if (!window.confirm('Biztosan törlöd ezt a hirdetést?')) return;
-    //   try {
-    //     await adService.delete(id);
-    //     setAds(prev => prev.filter(a => a.id !== id));
-    //   } catch (e) {
-    //     alert(e?.response?.data?.message || 'Törlés sikertelen.');
-    //   }
-    // };
+    const handleDeleteAd = async (id) => {
+        if (!window.confirm('Biztosan törlöd ezt a hirdetést?')) return;
+        try {
+            await adService.deleteAd(id);
+            setAds(prev => prev.filter(a => a.id !== id));
+        } catch (e) {
+            alert(e?.response?.data?.message || 'Törlés sikertelen.');
+        }
+    };
 
     if (!isAdmin) {
         return (
@@ -149,53 +171,53 @@ export default function AdminPage({ user, onBackHome, setCurrentPage }) {
                     )}
                 </section>
 
-                {/* Hirdetések blokk – később  service */}
-                {/*
-        <section className="admin-section">
-          <div className="section-header">
-            <h3>Hirdetések</h3>
-            <span className="pill">{ads.length}</span>
-          </div>
+                {/* Hirdetések blokk */}
+                <section className="admin-section">
+                    <div className="section-header">
+                        <h3>Hirdetések</h3>
+                        <span className="pill">{ads.length}</span>
+                    </div>
 
-          {loadingAds ? (
-            <p>Betöltés…</p>
-          ) : aError ? (
-            <p className="error">{aError}</p>
-          ) : ads.length === 0 ? (
-            <p>Nincs hirdetés.</p>
-          ) : (
-            <div className="table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Cím</th>
-                    <th>Létrehozó</th>
-                    <th style={{ width: 1 }}></th>
-                  </tr>
-                </thead>
-                <tbody>
-                {ads.map(a => (
-                  <tr key={a.id}>
-                    <td>{a.id}</td>
-                    <td>{a.title}</td>
-                    <td>{a.ownerName || a.ownerEmail || '-'}</td>
-                    <td>
-                      <button
-                        className="btn danger"
-                        onClick={() => handleDeleteAd(a.id)}
-                      >
-                        Törlés
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
-        */}
+                    {loadingAds ? (
+                        <p>Betöltés…</p>
+                    ) : aError ? (
+                        <p className="error">{aError}</p>
+                    ) : ads.length === 0 ? (
+                        <p>Nincs hirdetés.</p>
+                    ) : (
+                        <div className="table-wrap">
+                            <table className="admin-table">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Megnevezés</th>
+                                    <th>Ár</th>
+                                    <th>Létrehozva</th>
+                                    <th>Létrehozó</th>
+                                    <th style={{ width: 1 }}></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {ads.map(a => (
+                                    <tr key={a.id}>
+                                        <td>{a.id}</td>
+                                        <td>{a.title || '-'}</td>
+                                        <td>{a.price != null ? `${a.price} Ft` : '-'}</td>
+                                        <td>{a.createdAt ? new Date(a.createdAt).toLocaleString() : '-'}</td>
+                                        <td>{resolveCreator(a)}</td>
+                                        <td>
+                                            <button className="btn danger" onClick={() => handleDeleteAd(a.id)}>
+                                                Törlés
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+
+                            </table>
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

@@ -68,15 +68,15 @@ namespace TradeByte.Services
                 Price = dto.Price,
                 CreatedAt = DateTime.UtcNow,
                 UserId = userId,
-                // Categories feltöltése lent
+                // kategria feltöltése lent
             };
 
-            // --- Kategóriák hozzárendelése (M2M) ---
+            //Kategóriák hozzárendelése (M2M)
             if (dto.CategoryIds is { Count: > 0 })
             {
                 var ids = dto.CategoryIds.Where(id => id > 0).Distinct().ToList();
 
-                // Lekérjük a létező kategóriákat TRACKELT állapotban
+                // Lekérjük a létező kategóriákat
                 var categories = await _categories.GetByIdsAsync(ids, ct);
 
                 // Validáció: minden kért ID létezzen
@@ -117,7 +117,7 @@ namespace TradeByte.Services
 
             if (ad is null) return false;
 
-            // ---- Mezők frissítése CSAK ha érkezett új érték ----
+            //Mezők frissítése csak ha érkezett új érték
 
             // Cím
             if (dto.Title is not null)
@@ -143,7 +143,7 @@ namespace TradeByte.Services
                 ad.Price = dto.Price.Value;
             }
 
-            // ---- Kategória M2M csere (csak ha érkezett CategoryIds) ----
+
             if (dto.CategoryIds is not null)
             {
                 // deduplikálás
@@ -159,7 +159,7 @@ namespace TradeByte.Services
                 }
                 else
                 {
-                    // Valóban létező kategóriák lekérése (ATTACH-elt entitások)
+                    // Valóban létező kategóriák lekérése
                     var categories = await _categories.GetByIdsAsync(requestedIds, ct);
 
                     // Validáció: minden kért ID létezzen
@@ -171,7 +171,7 @@ namespace TradeByte.Services
                     // Teljes csere: töröljük a régi kapcsolatokat és berakjuk a megtalált entitásokat
                     ad.Categories.Clear();
                     foreach (var c in categories)
-                        ad.Categories.Add(c);   // ezek már létező, attach-elt entitások -> EF nem szúr duplán
+                        ad.Categories.Add(c);   // EF nem szúr duplán
                 }
             }
 
@@ -194,7 +194,7 @@ namespace TradeByte.Services
 
             if (ad is null) return false;
 
-            // Jogosultság: Admin
+            // Admin
             var isAdmin = _current.IsInRole("Admin");
             if (ad.UserId != CurrentUserId && !isAdmin)
                 throw new UnauthorizedAccessException();
@@ -255,7 +255,7 @@ namespace TradeByte.Services
             };
         }
 
-        // ---- Mapping helpers ----
+
         private static AdDto MapToAdDto(Classified ad, bool includeSeller)
         {
             return new AdDto

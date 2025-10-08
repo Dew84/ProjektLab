@@ -10,6 +10,8 @@ import authService from './services/authService';
 import AdListPage from './pages/AdListPage';
 import AdDetailPage from './pages/AdDetailPage';
 import CreateAdPage from './pages/CreateAdPage';
+import AdminPage from './pages/AdminPage';
+
 
 function App() {
   const [user, setUser] = useState(null);
@@ -73,6 +75,15 @@ function App() {
         return <AdDetailPage adId={selectedAdId} setCurrentPage={setCurrentPage}/>;
       case 'createAd':
         return <CreateAdPage setUser={setUser} adId={selectedAdId} />;
+      case 'admin':
+        return (
+            <AdminPage
+                user={user}
+                onBackHome={() => setCurrentPage('home')}
+                setCurrentPage={setCurrentPage}
+            />
+        );
+
       default:
         return (
             <HomePage

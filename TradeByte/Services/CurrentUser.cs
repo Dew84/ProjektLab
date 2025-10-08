@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace TradeByte.Services
 {
     /// <summary>
-    /// HttpContext-ből olvasott aktuális felhasználó. Egy kérés élettartamára "cache-el".
+    /// HttpContext-ből olvasott aktuális felhasználó.
     /// </summary>
     public sealed class CurrentUser : ICurrentUser
     {
@@ -36,7 +36,7 @@ namespace TradeByte.Services
                 var user = Principal;
                 if (user == null) return null;
 
-                // Leggyakoribb claim-ek: NameIdentifier és "sub"
+
                 _userId =
                     user.FindFirstValue(ClaimTypes.NameIdentifier) ??
                     user.FindFirst("sub")?.Value ??
