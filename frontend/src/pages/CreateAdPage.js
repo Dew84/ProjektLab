@@ -15,6 +15,7 @@ function CreateAdPage({ setUser, adId }) {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
+  const [seller, setSeller] = useState(null);
 
   // Kategóriák betöltése
   useEffect(() => {
@@ -42,6 +43,7 @@ function CreateAdPage({ setUser, adId }) {
         setPrice(ad.price);
         setCategoryId(ad.categoryIds[0] || "");
         setImagePreviews(ad.images || []);
+        setSeller(ad.userId);
       } catch (err) {
         console.error("Hiba a hirdetés betöltésekor:", err);
       }
@@ -66,6 +68,7 @@ function CreateAdPage({ setUser, adId }) {
     setLoading(true);
     setError("");
     setSuccessMessage("");
+    setSeller(setUser);
 
     if (!title || !price) {
       setError("A cím és az ár kitöltése kötelező!");

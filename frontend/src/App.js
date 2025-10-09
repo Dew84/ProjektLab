@@ -11,6 +11,7 @@ import AdListPage from './pages/AdListPage';
 import AdDetailPage from './pages/AdDetailPage';
 import CreateAdPage from './pages/CreateAdPage';
 import AdminPage from './pages/AdminPage';
+import OwnAdListPage from './pages/OwnAdListPage';
 
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
             <ProfilePage
                 user={user}
                 onBackHome={() => setCurrentPage('home')}
+                setCurrentPage={setCurrentPage}
             />
         );
       case 'adlist':
@@ -75,6 +77,12 @@ function App() {
         return <AdDetailPage adId={selectedAdId} setCurrentPage={setCurrentPage}/>;
       case 'createAd':
         return <CreateAdPage setUser={setUser} adId={selectedAdId} />;
+      case 'ownAds':
+        return <OwnAdListPage 
+                  setCurrentPage={setCurrentPage}
+                  setUser={setUser}
+                  setSelectedAdId={setSelectedAdId} 
+                />;
       case 'admin':
         return (
             <AdminPage

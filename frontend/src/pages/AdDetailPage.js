@@ -4,12 +4,14 @@ import adService from "../services/adService";
 import AdImageGallery from "../components/AdImageGallery";
 import "./AdDetailPage.css";
 import userService from "../services/userService";
+import {formatDateTime} from "../services/adService";
 
 function AdDetailPage({ adId }) {
   const [pictures, setPictures] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ad, setAd] = useState(null);
+  const [user, setUser] = useState(null); // 👈 új state a userhez
 
   useEffect(() => {
     if (!adId) return;
@@ -17,12 +19,19 @@ function AdDetailPage({ adId }) {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Hirdetés és képek betöltése
         const [adData, picturesData] = await Promise.all([
           adService.getAdById(adId),
           pictureService.getPictures(adId),
         ]);
         setAd(adData);
         setPictures(picturesData);
+
+        // 👇 Ha van userId (vagy ownerId), kérd le a usert is
+        if (adData?.userId) {
+          const userData = await userService.getUserById(adData.userId);
+          setUser(userData);
+        }
       } catch (err) {
         setError(err.message || "Hiba történt a betöltéskor.");
       } finally {
@@ -50,33 +59,24 @@ function AdDetailPage({ adId }) {
 
         <section className="ad-info">
           <h2 className="ad-price">{ad.price.toLocaleString()} Ft</h2>
-          {ad.category && (
-            <p className="ad-category">Kategória: {ad.category}</p>
-          )}
+          {ad.category && <p className="ad-category">Kategória: {ad.category}</p>}
           <p className="ad-description">
             {ad.description || "Nincs megadva leírás."}
           </p>
 
           <div className="ad-contact">
             <h3>Kapcsolat</h3>
-            <p><strong>Hirdető:</strong> { "Ismeretlen"}</p>
-            {ad.phone && <p>📞 {ad.phone}</p>}
-            {ad.email && <p>✉️ {ad.email}</p>}
+            <p>
+              <strong>Hirdető:</strong>{" "}
+              {user ? user.name || user.username || "Ismeretlen" : "Ismeretlen"}
+            </p>
+            {user?.phone && <p>📞 {user.phone}</p>}
+            {user?.email && <p>✉️ {user.email}</p>}
           </div>
         </section>
       </main>
     </div>
   );
-}
-
-function formatDateTime(dateString) {
-  const date = new Date(dateString);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${year}.${month}.${day} ${hours}:${minutes}`;
 }
 
 export default AdDetailPage;

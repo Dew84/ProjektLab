@@ -18,6 +18,11 @@ export default function ProfilePage(props) {
         if (typeof setCurrentPage === 'function') return setCurrentPage('home');
     };
 
+    const goOwnAds = () => {
+       
+        if (typeof setCurrentPage === 'function') return setCurrentPage('ownAds'); 
+    };
+
     useEffect(() => {
         (async () => {
             setLoading(true);
@@ -116,6 +121,9 @@ export default function ProfilePage(props) {
                 {info  && <p style={{ color: 'green', marginTop: 8 }}>{info}</p>}
                 {error && <p style={{ color: 'red',   marginTop: 8 }}>{error}</p>}
 
+                <button type="button" onClick={goOwnAds} style={{ marginTop: 12 }}>
+                    Saját hirdetéseim
+                </button>
                 <button type="button" onClick={goHome} style={{ marginTop: 12 }}>
                     Vissza a főoldalra
                 </button>
