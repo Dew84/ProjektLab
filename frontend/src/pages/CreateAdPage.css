@@ -65,6 +65,13 @@
   margin-bottom: 10px;
 }
 
+.warning {
+  background: rgb(251, 253, 112);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
 .create-ad-form button[type="submit"] {
   background: #007bff;
   color: #fff;

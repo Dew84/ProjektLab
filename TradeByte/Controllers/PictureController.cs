@@ -22,10 +22,6 @@ namespace TradeByte.Controllers
         public async Task<IActionResult> GetPictures(int adId, CancellationToken ct)
         {
             IList<IFormFile> pictures = await _pictureService.ListAsync(adId, ct);
-
-            if (pictures == null || pictures.Count == 0)
-                return NotFound(new { message = "Ehhez a hirdetéshez nem tartoznak képek." });
-
             return Ok(pictures);
         }
 
@@ -75,10 +71,10 @@ namespace TradeByte.Controllers
         /// <summary>
         /// Képek törlése egy adott hirdetéshez.
         /// </summary>
-        [HttpDelete("{pictId}")]
-        public async Task<IActionResult> DeletePictureById(int pictId, CancellationToken ct)
+        [HttpDelete("{pictName}")]
+        public async Task<IActionResult> DeletePictureById(string pictName, CancellationToken ct)
         {
-            bool result = await _pictureService.DeleteAsync(pictId, ct);
+            bool result = await _pictureService.DeleteAsync(pictName, ct);
 
             if (!result)
                 return Ok(new { message = "Nem volt mit törölni (a hirdetéshez nem tartozott kép)." });

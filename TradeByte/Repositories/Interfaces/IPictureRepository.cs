@@ -10,6 +10,9 @@ namespace TradeByte.Repositories.Interfaces
         Task<Picture?> GetByIdAsync(
             int id,            
             CancellationToken ct = default);
+        Task<Picture?> GetByFileNameAsync(
+            string fileName,            
+            CancellationToken ct = default);
 
         Task<IList<Picture>> ListByAdAsync(
             int adId,

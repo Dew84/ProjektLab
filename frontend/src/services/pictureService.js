@@ -27,9 +27,9 @@ const pictureService = {
   },
 
   // Egy kép törlése kép ID alapján
-  deletePicture: async (pictId) => {
+  deletePicture: async (pictName) => {
     try {
-      const response = await api.delete(`/picture/${pictId}`);
+      const response = await api.delete(`/picture/${pictName}`);
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || 'Törlés sikertelen';

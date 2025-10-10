@@ -44,7 +44,7 @@ function AdDetailPage({ adId }) {
 
   if (loading) return <div className="loading">Betöltés...</div>;
   if (error) return <div className="error">{error}</div>;
-
+console.log('Képek:', pictures);
   return (
     <div className="ad-detail-page">
       <header className="ad-header">

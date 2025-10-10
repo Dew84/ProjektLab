@@ -24,6 +24,14 @@ namespace TradeByte.Repositories
                                  .AsNoTracking()
                                  .FirstOrDefaultAsync(p => p.Id == id, ct);
         }
+        public async Task<Picture?> GetByFileNameAsync(
+            string fileName,
+            CancellationToken ct = default)
+        {
+            return await _context.Pictures
+                                 .AsNoTracking()
+                                 .FirstOrDefaultAsync(p => p.FileName == fileName, ct);
+        }
 
         public async Task<IList<Picture>> ListByAdAsync(
             int adId,

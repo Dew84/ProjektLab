@@ -39,6 +39,8 @@ namespace TradeByte.Services
                 await DeletePicture(pict, ct);
             }
 
+            Directory.Delete(Path.Combine(_imageFolder, adId.ToString()), true);
+
             return true;
         }
 
@@ -92,6 +94,11 @@ namespace TradeByte.Services
 
             foreach (IFormFile file in files)
             {
+                if (await _pictureRepository.GetByFileNameAsync(file.FileName, ct) != null)
+                {
+                    continue; // Ha már ilyen kép akkor kihagyjuk, ez módosításnál lényeg
+                }
+                
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
                 string uploadPath = Path.Combine(_imageFolder, adId.ToString());
@@ -109,15 +116,15 @@ namespace TradeByte.Services
 
                 Picture pict = new Picture(fileName, adId);
                 await _pictureRepository.AddAsync(pict, ct);
-                await _uow.SaveChangesAsync(ct);
             }
+            await _uow.SaveChangesAsync(ct);
 
             return true;
         }
 
-        public async Task<bool> DeleteAsync(int pictId, CancellationToken ct = default)
+        public async Task<bool> DeleteAsync(string pictName, CancellationToken ct = default)
         {
-            Picture? picture = await _pictureRepository.GetByIdAsync(pictId, ct);
+            Picture? picture = await _pictureRepository.GetByFileNameAsync(pictName, ct);
 
             if (picture == null)
             {
@@ -135,6 +142,7 @@ namespace TradeByte.Services
                 File.Delete(filePath);
             }
             await _pictureRepository.RemoveAsync(pict, ct);
+            await _uow.SaveChangesAsync(ct);
 
             return true;
         }

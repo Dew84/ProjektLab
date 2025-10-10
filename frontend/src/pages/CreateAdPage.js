@@ -4,18 +4,23 @@ import categoryService from "../services/categoryService";
 import pictureService from "../services/pictureService";
 import "./CreateAdPage.css";
 
-function CreateAdPage({ setUser, adId }) {
+const API_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = API_URL.replace(/\/api$/, "");
+
+function CreateAdPage({ userId, adId }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
-  const [images, setImages] = useState([]);
-  const [imagePreviews, setImagePreviews] = useState([]);
+  const [images, setImages] = useState([]); // új képfájlok
+  const [imagePreviews, setImagePreviews] = useState([]); // URL-ek (meglévő + új preview)
+  const [originalImages, setOriginalImages] = useState([]); // eredeti képek az ad-ból
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [error, setError] = useState("");
   const [seller, setSeller] = useState(null);
+  const [warning, setWarning] = useState("");
 
   // Kategóriák betöltése
   useEffect(() => {
@@ -30,8 +35,6 @@ function CreateAdPage({ setUser, adId }) {
     fetchCategories();
   }, []);
 
-  console.log("CreateAdPage adId:", adId);
-
   // Meglévő hirdetés betöltése
   useEffect(() => {
     if (!adId) return;
@@ -42,7 +45,6 @@ function CreateAdPage({ setUser, adId }) {
         setDescription(ad.description);
         setPrice(ad.price);
         setCategoryId(ad.categoryIds[0] || "");
-        setImagePreviews(ad.images || []);
         setSeller(ad.userId);
       } catch (err) {
         console.error("Hiba a hirdetés betöltésekor:", err);
@@ -51,6 +53,34 @@ function CreateAdPage({ setUser, adId }) {
     fetchAd();
   }, [adId]);
 
+  // Képek betöltése meglévő hirdetéshez
+  useEffect(() => {
+    if (!adId) return;
+
+    const fetchPictures = async () => {
+      try {
+        const picturesData = await pictureService.getPictures(adId);
+        const formatted = picturesData.map((p) => ({
+          fileName: p.fileName,
+          url: `${BASE_URL}/images/${adId}/${p.fileName}`,
+        }));
+
+        if(formatted.length === 0) {
+          setWarning("Ez a hirdetés nem tartalmaz képeket!");
+        }
+
+        setOriginalImages(formatted);
+        setImagePreviews(formatted.map((p) => p.url));
+        console.log("Betöltött képek:", formatted);
+      } catch (err) {
+        console.error(err.message || "Hiba történt a képek betöltéskor.");
+      }
+    };
+
+    fetchPictures();
+  }, [adId]);
+
+  // Új képek kezelése
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setImages((prev) => [...prev, ...files]);
@@ -58,17 +88,19 @@ function CreateAdPage({ setUser, adId }) {
     setImagePreviews((prev) => [...prev, ...previews]);
   };
 
+  // Kép eltávolítása (csak kliens oldalon)
   const removeImage = (index) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  // Hirdetés mentése / módosítása
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setSuccessMessage("");
-    setSeller(setUser);
+    setSeller(userId);
 
     if (!title || !price) {
       setError("A cím és az ár kitöltése kötelező!");
@@ -88,15 +120,27 @@ function CreateAdPage({ setUser, adId }) {
       let resultAd;
 
       if (adId) {
-        // Update meglévő hirdetés
+        // Módosítás
         resultAd = await adService.updateAd(adId, adData, token);
-      } else {
-        // Új hirdetés létrehozása
-        resultAd = await adService.createAd(adData, token);
-      }
 
-      if (images.length > 0) {
-        await pictureService.uploadPictures(resultAd.id, images);
+        // Törölt képek (amik az eredetiből eltűntek)
+        for (const img of originalImages) {
+          if (!imagePreviews.includes(img.url)) {
+            await pictureService.deletePicture(img.fileName);
+          }
+        }
+
+        const newImages = images.filter((img) => img instanceof File);
+        if (newImages.length > 0) {
+          await pictureService.uploadPictures(adId, newImages);
+        }
+
+      } else {
+        // Új hirdetés
+        resultAd = await adService.createAd(adData, token);
+        if (images.length > 0) {
+          await pictureService.uploadPictures(resultAd.id, images);
+        }
       }
 
       setSuccessMessage(adId ? "Sikeres módosítás!" : "Sikeres felvitel!");
@@ -110,7 +154,7 @@ function CreateAdPage({ setUser, adId }) {
       }
     } catch (err) {
       console.error(err);
-      setError(err || "Hiba történt a hirdetés mentése során.");
+      setError("Hiba történt a hirdetés mentése során.");
     } finally {
       setLoading(false);
     }
@@ -122,68 +166,44 @@ function CreateAdPage({ setUser, adId }) {
       <form className="create-ad-form" onSubmit={handleSubmit}>
         {error && <div className="error">{error}</div>}
         {successMessage && <div className="success">{successMessage}</div>}
+        {warning && <div className="warning">{warning}</div>}
 
         <label>
           Cím*:
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
+          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
         </label>
 
         <label>
           Leírás:
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
         </label>
 
         <label>
           Ár*:
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            required
-          />
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
         </label>
 
         <label>
           Kategória:
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-          >
+          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
             <option value="">Kérem válasszon!</option>
             {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
         </label>
 
         <label>
           Képek feltöltése:
-          <input
-            type="file"
-            multiple
-            accept=".jpg,.jpeg,.png"
-            onChange={handleImageChange}
-          />
+          <input type="file" multiple accept=".jpg,.jpeg,.png" onChange={handleImageChange} />
         </label>
 
-        {/* Kép preview */}
+        {/* Képek előnézete */}
         <div className="image-previews">
           {imagePreviews.map((src, index) => (
             <div key={index} className="image-preview">
               <img src={src} alt={`preview-${index}`} />
-              <button type="button" onClick={() => removeImage(index)}>
-                ✖
-              </button>
+              <button type="button" onClick={() => removeImage(index)}>✖</button>
             </div>
           ))}
         </div>

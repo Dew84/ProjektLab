@@ -76,7 +76,7 @@ function App() {
       case 'adDetails':
         return <AdDetailPage adId={selectedAdId} setCurrentPage={setCurrentPage}/>;
       case 'createAd':
-        return <CreateAdPage setUser={setUser} adId={selectedAdId} />;
+        return <CreateAdPage userId={user} adId={selectedAdId} />;
       case 'ownAds':
         return <OwnAdListPage 
                   setCurrentPage={setCurrentPage}

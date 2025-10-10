@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import adService, { formatDateTime } from '../services/adService';
 import PageSizeSelector from '../components/PageSizeSelector';
 import './OwnAdListPage.css';
+import pictureService from '../services/pictureService';
 
 function OwnAdListPage({ setCurrentPage, setUser, setSelectedAdId }) {
     const [ads, setAds] = useState([]);
@@ -18,6 +19,7 @@ function OwnAdListPage({ setCurrentPage, setUser, setSelectedAdId }) {
     const handleDelete = async (adId) => {
         if (!window.confirm('Biztosan törlöd?')) return;
         try {
+            await pictureService.deletePicturesByAd(adId);
             await adService.deleteAd(adId);
             setAds(prev => prev.filter(a => a.id !== adId));
         } catch (e) {

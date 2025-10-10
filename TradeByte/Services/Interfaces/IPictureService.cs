@@ -9,6 +9,6 @@ namespace TradeByte.Services.Interfaces
         Task<IList<IFormFile>> ListAsync(int adId, CancellationToken ct = default);        
         Task<bool> UploadAsync(IList<IFormFile> files, int adId, CancellationToken ct = default);
         Task<bool> DeleteByAdIdAsync(int adId, CancellationToken ct = default);
-        Task<bool> DeleteAsync(int pictId, CancellationToken ct = default);
+        Task<bool> DeleteAsync(string pictName, CancellationToken ct = default);
     }
 }
