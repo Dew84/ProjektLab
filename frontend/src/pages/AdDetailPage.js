@@ -29,7 +29,7 @@ function AdDetailPage({ adId }) {
 
         // 👇 Ha van userId (vagy ownerId), kérd le a usert is
         if (adData?.userId) {
-          const userData = await userService.getUserById(adData.userId);
+          const userData = await userService.getUserByIdToAd(adData.userId);
           setUser(userData);
         }
       } catch (err) {
@@ -68,9 +68,9 @@ console.log('Képek:', pictures);
             <h3>Kapcsolat</h3>
             <p>
               <strong>Hirdető:</strong>{" "}
-              {user ? user.name || user.username || "Ismeretlen" : "Ismeretlen"}
+              {user ? user.userName : "Ismeretlen"}
             </p>
-            {user?.phone && <p>📞 {user.phone}</p>}
+            {user?.phoneNumber && <p>📞 {user.phoneNumber}</p>}
             {user?.email && <p>✉️ {user.email}</p>}
           </div>
         </section>

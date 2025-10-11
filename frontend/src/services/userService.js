@@ -32,6 +32,16 @@ const userService = {
     }
   },
 
+  //felhasználó lekérése a hirdetésekhez
+  getUserByIdToAd: async (id) => {
+    try {
+      const { data } = await api.get(`/users/public/${id}`);
+      return data;
+    } catch (error) {
+      throw error?.response?.data?.message || 'Felhasználó betöltése sikertelen';
+    }
+  },
+
   // (admin) összes user
   getAllUsers: async () => {
     try {

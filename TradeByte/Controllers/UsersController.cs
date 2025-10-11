@@ -113,6 +113,30 @@ namespace TradeByte.Controllers
         }
 
         /// <summary>
+        /// Felhasználó lekérése hirdetés adatai miatt
+        /// </summary>
+        /// <param name="id">Felhasználó azonosítója</param>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Felhasználó adatai</returns>
+        [HttpGet("public/{id:int}")]
+        [ProducesResponseType(typeof(AdUserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<UserDto>> GetUserToAd(int id, CancellationToken ct = default)
+        {
+            AdUserDto? user = await _userService.GetByAdToAdAsync(id, ct);
+            
+            if (user == null)
+            {
+                return NotFound(new { message = "Felhasználó nem található." });
+            }
+
+            return Ok(user);
+            
+        }
+
+        /// <summary>
         /// Összes felhasználó listázása (admin jogosultság szükséges)
         /// </summary>
         /// <param name="ct">Cancellation token</param>
