@@ -95,7 +95,7 @@ Minden maradék,
 
 
 2 hetente Orosz Ákossal egyeztetés az aktuális helyzetről.
-Kövi: 2025.10.13 17:15
+Kövi: 2025.10.27 17:15
 
 A csapat heti 2-szer egyeztet a haladásról.
 Kövi: 2025.09.29 17:30
