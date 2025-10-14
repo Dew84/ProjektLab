@@ -22,8 +22,8 @@ namespace TradeByte.Models
         public int Id { get; set; }
 
         /// <summary>
-        /// Jogosultsági csoport neve
+        /// Jogosultsági csoport kódja
         /// </summary>
-        public RoleType Name { get; set; }
+        public RoleType Key { get; set; }
     }
 }

@@ -119,7 +119,7 @@ namespace TradeByte.Services
             Id = u.Id,
             UserName = u.Username,
             Email = u.Email,
-            Role = u.Role?.Name.ToString() ?? "User"
+            Role = u.Role?.Key.ToString() ?? "User"
         };
     }
 }
