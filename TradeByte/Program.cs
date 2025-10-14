@@ -127,6 +127,12 @@ namespace TradeByte
                 });
             }
 
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                Context.AppDbContext db = scope.ServiceProvider.GetRequiredService<Context.AppDbContext>();
+                db.Database.Migrate(); 
+            }
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
