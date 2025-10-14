@@ -75,7 +75,7 @@ namespace TradeByte.Repositories
 
             var total = await q.CountAsync(ct);
 
-            // stabil lapozás mindig rendezéssel
+            // lapozás mindig rendezéssel
             q = ApplySorting(q, sortBy, desc);
 
             var page = Math.Max(1, query.Page);

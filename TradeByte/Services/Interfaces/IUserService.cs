@@ -9,6 +9,7 @@ namespace TradeByte.Services.Interfaces
     public interface IUserService
     {
         Task<UserDto?> GetByIdAsync(int userId, CancellationToken ct = default); // int
+        Task<AdUserDto?> GetByAdToAdAsync(int userId, CancellationToken ct = default);
         Task<UserDto?> GetMeAsync(CancellationToken ct = default);
         Task<bool> UpdateMeAsync(UpdateUserDto dto, CancellationToken ct = default);
 

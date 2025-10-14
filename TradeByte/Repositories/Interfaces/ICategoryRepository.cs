@@ -23,7 +23,7 @@ namespace TradeByte.Repositories.Interfaces
         Task UpdateAsync(Category category, CancellationToken ct = default);
         Task RemoveAsync(Category category, CancellationToken ct = default);
 
-        // Alternatíva, ha stub entitásokat akarsz bekötni
+        // Alternatíva, ha stub entitásokat akarunk beköteni
         void AttachRange(IEnumerable<Category> categories);
     }
 }

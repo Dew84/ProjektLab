@@ -26,7 +26,7 @@ namespace TradeByte.Services
             _current = current;
         }
 
-        //  aktuális userId int-ként (ICurrentUser.UserId string -> int)
+        //  aktuális userId int-ként
         private int CurrentUserId
         {
             get
@@ -74,6 +74,20 @@ namespace TradeByte.Services
             return user is null ? null : MapToDto(user);
         }
 
+        public async Task<AdUserDto?> GetByAdToAdAsync(int userId, CancellationToken ct = default)
+        {
+            User? user = await _users.GetByIdAsync(userId, ct) 
+                        ?? throw new KeyNotFoundException("A megadott felhasználó nem található.");
+            return new AdUserDto
+            {
+                Id = user.Id,
+                UserName = user.Username,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber ?? "",
+                Address = user.Address ?? ""
+            };
+        }
+
         public async Task<IReadOnlyList<UserDto>> GetAllAsync(CancellationToken ct = default)
         {
             if (!_current.IsInRole("Admin"))
@@ -99,7 +113,7 @@ namespace TradeByte.Services
             return true;
         }
 
-        // ---- Mapping ----
+
         private static UserDto MapToDto(User u) => new UserDto
         {
             Id = u.Id,

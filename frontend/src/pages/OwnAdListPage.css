@@ -1,0 +1,78 @@
+.adlist-page {
+  padding: 20px;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.table-container {
+  margin-top: 20px;
+  overflow-x: auto;
+}
+
+.ad-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.ad-table th, .ad-table td {
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.ad-table th {
+  background-color: #f3f4f6;
+  color: #333;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+
+.ad-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.ad-table tr:hover {
+  background-color: #f0f8ff;
+  transition: background 0.2s ease-in-out;
+}
+
+.btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn.modify {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn.modify:hover {
+  background-color: #2563eb;
+}
+
+.btn.delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn.delete:hover {
+  background-color: #dc2626;
+}
+
+@media (max-width: 600px) {
+  .ad-table th, .ad-table td {
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .btn {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
+}
