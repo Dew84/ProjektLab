@@ -22,11 +22,9 @@ const adService = {
   },
 
   // Saját hirdetések
-  getMyAds: async (page = 1, pageSize = 20) => {
+  getMyAds: async (params = {}) => {
     try {
-      const response = await api.get('/ads/mine', {
-        params: { page, pageSize },
-      });
+      const response = await api.get('/ads/mine', { params});
       return response.data;
     } catch (error) {
       throw error.response?.data?.message || 'Saját hirdetések betöltése sikertelen';
