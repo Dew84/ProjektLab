@@ -98,7 +98,7 @@ hirdető adatainak bővítése, MD
 
 Frontend:
 összes hírdetés megjelenítése(keresés gomb) PO
-Admin felület MD USER
+Admin felület MD USERENKÉNT-AD
 Profil oldal lenyítható felülettel MD
 Értékelés Hidertő adatainál MD
 Üzenetoldal BD
@@ -107,7 +107,8 @@ hirdető adatai hirdetései BD
 
 
 2 hetente Orosz Ákossal egyeztetés az aktuális helyzetről.
-Kövi: 2025.10.27 17:15
+Kövi: 2025.10.27 17:15 kérdések: prezi
+esetlegesen 11.03 prezibemutató
 
 A csapat heti 2-szer egyeztet a haladásról.
 Kövi: 2025.09.29 17:30
