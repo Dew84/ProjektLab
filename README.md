@@ -86,12 +86,24 @@ Felosztás:
 6 Oli- 2. csomag
 
 
+ppt előadás nov 6.-ig
 
 
 Decemberre
-Keresés
-Üzenetküldés,
-Minden maradék,
+backend:
+Keresés, PO
+Üzenetküldés, BD
+értékelés, MD
+hirdető adatainak bővítése, MD
+
+Frontend:
+összes hírdetés megjelenítése(keresés gomb) PO
+Admin felület MD USER
+Profil oldal lenyítható felülettel MD
+Értékelés Hidertő adatainál MD
+Üzenetoldal BD
+hirdető adatai hirdetései BD
+
 
 
 2 hetente Orosz Ákossal egyeztetés az aktuális helyzetről.
