@@ -1,32 +1,30 @@
-import React from 'react';
-import './AdCard.css';
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import pictureService from "../services/pictureService";
-
+import './AdCard.css';
 
 const API_URL = process.env.REACT_APP_API_URL; 
 const BASE_URL = API_URL.replace(/\/api$/, '');
 
-function AdCard({ ad, onClick }) {
+function AdCard({ ad }) {
+  const navigate = useNavigate();
   const [pictures, setPictures] = useState([]);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const picturesData = await pictureService.getPictures(ad.id);
-      setPictures(picturesData);
-    } catch (err) {
-      setError(err.message || "Hiba történt a képek betöltéskor.");
-    }
-  };
+    const fetchData = async () => {
+      try {
+        const picturesData = await pictureService.getPictures(ad.id);
+        setPictures(picturesData);
+      } catch (err) {
+        console.error(err.message || "Hiba történt a képek betöltéskor.");
+      }
+    };
 
-  fetchData();
-}, [ad.id]);
+    fetchData();
+  }, [ad.id]);
 
   return (
-
-    <div className="ad-card" onClick={onClick}>
+    <div className="ad-card" onClick={() => navigate(`/ads/${ad.id}`)}>
       <div className="ad-card-image">
         {pictures.length > 0 ? (
           <img src={`${BASE_URL}/images/${ad.id}/${pictures[0].fileName}`} alt={ad.title} />
@@ -39,7 +37,12 @@ function AdCard({ ad, onClick }) {
         <p className="ad-card-description">{ad.description}</p>
         <div className="ad-card-footer">
           <span className="ad-card-price">{ad.price.toLocaleString()} Ft</span>
-          <button className="ad-card-button" onClick={onClick}>Részletek</button>
+          <button className="ad-card-button" onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/ads/${ad.id}`);
+          }}>
+            Részletek
+          </button>
         </div>
       </div>
     </div>

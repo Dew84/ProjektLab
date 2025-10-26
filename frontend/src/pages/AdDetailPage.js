@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import pictureService from "../services/pictureService";
 import adService from "../services/adService";
-import AdImageGallery from "../components/AdImageGallery";
-import "./AdDetailPage.css";
 import userService from "../services/userService";
-import {formatDateTime} from "../services/adService";
+import AdImageGallery from "../components/AdImageGallery";
+import { formatDateTime } from "../services/adService";
+import "./AdDetailPage.css";
 
-function AdDetailPage({ adId }) {
+function AdDetailPage() {
+  const { id } = useParams(); // 🆕 URL-ből olvassuk az ID-t
   const [pictures, setPictures] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ad, setAd] = useState(null);
-  const [user, setUser] = useState(null); // 👈 új state a userhez
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!adId) return;
+    if (!id) return;
 
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Hirdetés és képek betöltése
         const [adData, picturesData] = await Promise.all([
-          adService.getAdById(adId),
-          pictureService.getPictures(adId),
+          adService.getAdById(id),
+          pictureService.getPictures(id),
         ]);
         setAd(adData);
         setPictures(picturesData);
 
-        // 👇 Ha van userId (vagy ownerId), kérd le a usert is
         if (adData?.userId) {
           const userData = await userService.getUserByIdToAd(adData.userId);
           setUser(userData);
@@ -40,11 +40,11 @@ function AdDetailPage({ adId }) {
     };
 
     fetchData();
-  }, [adId]);
+  }, [id]);
 
   if (loading) return <div className="loading">Betöltés...</div>;
   if (error) return <div className="error">{error}</div>;
-console.log('Képek:', pictures);
+
   return (
     <div className="ad-detail-page">
       <header className="ad-header">
@@ -54,7 +54,7 @@ console.log('Képek:', pictures);
 
       <main className="ad-content">
         <section className="ad-gallery">
-          <AdImageGallery images={pictures} adId={adId} />
+          <AdImageGallery images={pictures} adId={id} />
         </section>
 
         <section className="ad-info">
@@ -67,8 +67,7 @@ console.log('Képek:', pictures);
           <div className="ad-contact">
             <h3>Kapcsolat</h3>
             <p>
-              <strong>Hirdető:</strong>{" "}
-              {user ? user.userName : "Ismeretlen"}
+              <strong>Hirdető:</strong> {user ? user.userName : "Ismeretlen"}
             </p>
             {user?.phoneNumber && <p>📞 {user.phoneNumber}</p>}
             {user?.email && <p>✉️ {user.email}</p>}

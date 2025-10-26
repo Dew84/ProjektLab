@@ -55,9 +55,9 @@ namespace TradeByte.Services
                 if (File.Exists(filePath))
                 {
                     MemoryStream memory = new MemoryStream();
-                    using (FileStream stream = new FileStream(filePath, FileMode.Open))
+                    using (FileStream stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
-                        await stream.CopyToAsync(memory);
+                        await stream.CopyToAsync(memory, ct);
                     }
                     memory.Position = 0;
                     IFormFile file = new FormFile(memory, 0, memory.Length, pict.FileName, pict.FileName)
