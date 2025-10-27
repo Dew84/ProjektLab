@@ -16,7 +16,7 @@ namespace TradeByte.Controllers
             _conversationService = conversationService;
         }
 
-        [HttpGet("{user1id}-{user2id}")]
+        [HttpGet("{user1id}/{user2id}")]
         public async Task<IActionResult> GetConversation(int user1id, int user2id)
         {
             ConversationDto? conversation = await _conversationService.GetConversationByParticipantsAsync(user1id, user2id);
