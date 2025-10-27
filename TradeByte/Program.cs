@@ -39,6 +39,8 @@ namespace TradeByte
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IPictureRepository, PictureRepository>();
+            builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+            builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             // HttpContextAccessor a CurrentUser szolgáltatáshoz
