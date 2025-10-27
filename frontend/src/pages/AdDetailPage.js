@@ -8,12 +8,25 @@ import { formatDateTime } from "../services/adService";
 import "./AdDetailPage.css";
 
 function AdDetailPage() {
-  const { id } = useParams(); // 🆕 URL-ből olvassuk az ID-t
+  const { id } = useParams(); // URL-ből olvassuk az ID-t
   const [pictures, setPictures] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ad, setAd] = useState(null);
   const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    console.log('AdDetailPage betöltve - flag beállítása');
+    sessionStorage.setItem('keepHomeCategories', 'true');
+
+    // Cleanup: amikor elhagyjuk az oldalt, töröljük a flag-et késleltetéssel
+    return () => {
+      console.log('AdDetailPage elhagyva - flag törlése késleltetéssel');
+      setTimeout(() => {
+        sessionStorage.removeItem('keepHomeCategories');
+      }, 1000);
+    };
+  }, []);
 
   useEffect(() => {
     if (!id) return;

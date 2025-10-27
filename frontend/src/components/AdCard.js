@@ -23,8 +23,26 @@ function AdCard({ ad }) {
     fetchData();
   }, [ad.id]);
 
+  const handleCardClick = () => {
+    sessionStorage.setItem('keepHomeCategories', 'true');
+  navigate(`/ads/${ad.id}`);
+  
+  setTimeout(() => {
+    sessionStorage.removeItem('keepHomeCategories');
+  }, 500);
+  };
+  const handleButtonClick = () => {
+    sessionStorage.setItem('keepHomeCategories', 'true');
+  navigate(`/ads/${ad.id}`);
+  
+  // Flag törlése 500ms késleltetéssel
+  setTimeout(() => {
+    sessionStorage.removeItem('keepHomeCategories');
+  }, 500);
+  };
+
   return (
-    <div className="ad-card" onClick={() => navigate(`/ads/${ad.id}`)}>
+    <div className="ad-card" onClick={handleCardClick}>
       <div className="ad-card-image">
         {pictures.length > 0 ? (
           <img src={`${BASE_URL}/images/${ad.id}/${pictures[0].fileName}`} alt={ad.title} />
@@ -37,10 +55,7 @@ function AdCard({ ad }) {
         <p className="ad-card-description">{ad.description}</p>
         <div className="ad-card-footer">
           <span className="ad-card-price">{ad.price.toLocaleString()} Ft</span>
-          <button className="ad-card-button" onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/ads/${ad.id}`);
-          }}>
+          <button className="ad-card-button" onClick={handleButtonClick}>
             Részletek
           </button>
         </div>

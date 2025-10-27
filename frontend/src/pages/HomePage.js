@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CategorySection from '../components/CategorySection';
 import categoryService from '../services/categoryService';
 import adService from '../services/adService';
 import './HomePage.css';
 
-function HomePage({ setCurrentPage, setCategoryId , setSelectedAdId }) {
+function HomePage({ setCurrentPage, setCategoryId, setSelectedAdId }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [adsData, setAdsData] = useState({});
@@ -12,8 +12,19 @@ function HomePage({ setCurrentPage, setCategoryId , setSelectedAdId }) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    loadData();
-  }, []);
+  loadData();
+  
+  // Amikor a komponens betöltődött, kis késleltetéssel töröljük a flag-et
+  // Így a loadData már felhasználhatta, de a következő navigációhoz már nem lesz ott
+  const timer = setTimeout(() => {
+    if (sessionStorage.getItem('keepHomeCategories') === 'true') {
+      console.log('🧹 Flag törlése késleltetéssel');
+      sessionStorage.removeItem('keepHomeCategories');
+    }
+  }, 1000); // 1 másodperc után töröljük
+
+  return () => clearTimeout(timer);
+}, []);
 
   const loadData = async () => {
     try {
@@ -23,12 +34,41 @@ function HomePage({ setCurrentPage, setCategoryId , setSelectedAdId }) {
       const categoriesData = await categoryService.getCategories();
       setCategories(categoriesData);
 
-      // 2. Random 2 kategória kiválasztása
-      const shuffled = [...categoriesData].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, 2);
-      setSelectedCategories(selected);
+      // 2. Ellenőrizzük hogy navigációból jövünk-e vagy frissítésből
+      const savedCategoriesIds = sessionStorage.getItem('homePageCategories');
+      const navigationFlag = sessionStorage.getItem('keepHomeCategories');
+      
+      let selected;
+      let shouldKeepCategories = false;
 
+      //Ha navigációból jövünk, akkor ne véletlenszerű kategóriákat válasszunk
+      if (savedCategoriesIds && navigationFlag === 'true') {
+        console.log('Navigációból jövünk, megtartjuk a kategóriákat');
+        const ids = JSON.parse(savedCategoriesIds);
+        selected = categoriesData.filter(cat => ids.includes(cat.id));
+
+        //Ha kevesebb mint 2 kategória van mentve, akkor töltsünk be véletlenszerűeket
+        if (selected.length >= 2) {
+          shouldKeepCategories = true;
+        } else {
+          console.log('Kevés kategória mentve, véletlenszerűeket töltünk be');
+          const shuffled = [...categoriesData].sort(() => 0.5 - Math.random());
+          selected = shuffled.slice(0, 2);
+        }
+      } else {
+        console.log('Frissítésből jövünk, véletlenszerű kategóriákat választunk');
+        const shuffled = [...categoriesData].sort(() => 0.5 - Math.random());
+        selected = shuffled.slice(0, 2);
+      }
+      sessionStorage.setItem('homePageCategories', JSON.stringify(selected.map(cat => cat.id)));
+      
+      if(!shouldKeepCategories) {
+        sessionStorage.removeItem('keepHomeCategories');
+      }
+
+      setSelectedCategories(selected);
       // 3. Hirdetések betöltése kategóriánként
+
       const adsPromises = selected.map(async (category) => {
         const ads = await adService.getAds({
           categoryId: category.id,

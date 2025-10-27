@@ -28,7 +28,15 @@ function Navbar({ user, setUser, setSelectedAdId }) {
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/register');
   const handleAdminPanel = () => navigate('/admin');
-  const handleLogoClick = () => navigate('/');
+  const handleLogoClick = () => {
+  sessionStorage.setItem('keepHomeCategories', 'true');
+  navigate('/');
+  
+  // Flag törlése 500ms késleltetéssel, hogy a HomePage betöltődjön
+  setTimeout(() => {
+    sessionStorage.removeItem('keepHomeCategories');
+  }, 500);
+};
 
   const handleLogout = () => {
     localStorage.removeItem('token');
