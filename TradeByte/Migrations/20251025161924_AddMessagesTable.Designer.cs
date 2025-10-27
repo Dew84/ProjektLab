@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeByte.Context;
 
@@ -10,9 +11,11 @@ using TradeByte.Context;
 namespace TradeByte.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251025161924_AddMessagesTable")]
+    partial class AddMessagesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -77,33 +80,6 @@ namespace TradeByte.Migrations
                     b.ToTable("Classifieds");
                 });
 
-            modelBuilder.Entity("TradeByte.Models.Conversation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("ReceiverId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("SenderId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("User1Id")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("User2Id")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ReceiverId");
-
-                    b.HasIndex("SenderId");
-
-                    b.ToTable("Conversations");
-                });
-
             modelBuilder.Entity("TradeByte.Models.Message", b =>
                 {
                     b.Property<int>("Id")
@@ -111,9 +87,10 @@ namespace TradeByte.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Content")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ConversationId")
+                    b.Property<int>("ReceiverId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SenderId")
@@ -124,7 +101,7 @@ namespace TradeByte.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConversationId");
+                    b.HasIndex("ReceiverId");
 
                     b.HasIndex("SenderId");
 
@@ -225,26 +202,11 @@ namespace TradeByte.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TradeByte.Models.Conversation", b =>
+            modelBuilder.Entity("TradeByte.Models.Message", b =>
                 {
                     b.HasOne("TradeByte.Models.User", "Receiver")
                         .WithMany()
-                        .HasForeignKey("ReceiverId");
-
-                    b.HasOne("TradeByte.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId");
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("TradeByte.Models.Message", b =>
-                {
-                    b.HasOne("TradeByte.Models.Conversation", "Conversation")
-                        .WithMany()
-                        .HasForeignKey("ConversationId")
+                        .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -254,7 +216,7 @@ namespace TradeByte.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Conversation");
+                    b.Navigation("Receiver");
 
                     b.Navigation("Sender");
                 });

@@ -30,8 +30,9 @@ namespace TradeByte
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ICurrentUser, CurrentUser>();
             builder.Services.AddScoped<IPictureService, PictureService>();
-            /*builder.Services.AddScoped<IMessageService, MessageService>();
-            builder.Services.AddScoped<IRatingService, RatingService>();*/
+            builder.Services.AddScoped<IMessageService, MessageService>();
+            builder.Services.AddScoped<IConversationService, ConversationService>();
+            /*builder.Services.AddScoped<IRatingService, RatingService>();*/
 
             // Repositories
             builder.Services.AddScoped<IAdRepository, AdRepository>();
