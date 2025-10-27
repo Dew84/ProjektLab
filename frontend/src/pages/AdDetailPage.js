@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import pictureService from "../services/pictureService";
 import adService from "../services/adService";
 import userService from "../services/userService";
@@ -15,6 +15,8 @@ function AdDetailPage() {
   const [ad, setAd] = useState(null);
   const [user, setUser] = useState(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     console.log('AdDetailPage betöltve - flag beállítása');
     sessionStorage.setItem('keepHomeCategories', 'true');
@@ -22,9 +24,6 @@ function AdDetailPage() {
     // Cleanup: amikor elhagyjuk az oldalt, töröljük a flag-et késleltetéssel
     return () => {
       console.log('AdDetailPage elhagyva - flag törlése késleltetéssel');
-      setTimeout(() => {
-        sessionStorage.removeItem('keepHomeCategories');
-      }, 1000);
     };
   }, []);
 

@@ -224,8 +224,8 @@ namespace TradeByte.Services
         {
             var page = await _ads.ListAsync(
                 query,
-                sortBy: "createdAt",
-                desc: true,
+                sortBy: query.SortBy ?? "createdAt",
+                desc: query.SortDesc ?? true,
                 ct: ct);
 
             return new PagedResult<AdDto>

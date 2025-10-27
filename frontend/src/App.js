@@ -10,6 +10,8 @@ import AdDetailPage from './pages/AdDetailPage';
 import CreateAdPage from './pages/CreateAdPage';
 import AdminPage from './pages/AdminPage';
 import OwnAdListPage from './pages/OwnAdListPage';
+import AllCategoriesPage from './pages/AllCategoriesPage';
+import AllAdsPage from './pages/AllAdsPage';
 import './App.css';
 import authService from './services/authService';
 
@@ -49,6 +51,18 @@ function App() {
                 setHomeCategories={setHomeCategories}
               />
             } 
+          />
+
+          {/* ÚJ: Összes kategória */}
+          <Route 
+            path="/categories" 
+            element={<AllCategoriesPage />} 
+          />
+
+          {/* ÚJ: Összes hirdetés */}
+          <Route 
+            path="/all-ads" 
+            element={<AllAdsPage />} 
           />
 
           {/* Auth oldalak */}

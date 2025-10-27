@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CategorySection from '../components/CategorySection';
 import categoryService from '../services/categoryService';
 import adService from '../services/adService';
@@ -11,14 +12,23 @@ function HomePage({ setCurrentPage, setCategoryId, setSelectedAdId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
+    const fromNavigation = location.state?.fromNavigation;
+
+    if (fromNavigation) {
+      console.log('Navigációból jövünk, megtartjuk a kategóriákat');
+      sessionStorage.setItem('keepHomeCategories', 'true');
+    }
   loadData();
   
   // Amikor a komponens betöltődött, kis késleltetéssel töröljük a flag-et
   // Így a loadData már felhasználhatta, de a következő navigációhoz már nem lesz ott
   const timer = setTimeout(() => {
     if (sessionStorage.getItem('keepHomeCategories') === 'true') {
-      console.log('🧹 Flag törlése késleltetéssel');
+      console.log('Flag törlése késleltetéssel');
       sessionStorage.removeItem('keepHomeCategories');
     }
   }, 1000); // 1 másodperc után töröljük
@@ -119,6 +129,21 @@ function HomePage({ setCurrentPage, setCategoryId, setSelectedAdId }) {
         <h1>Üdvözöllek a TradeByte-on! 👋</h1>
         <p>Vásárolj és adj el könnyedén</p>
       </header>
+
+    <div className="homepage-actions">
+        <button 
+          className="action-button categories-button"
+          onClick={() => navigate('/categories')}
+        >
+          📂 Összes kategória
+        </button>
+        <button 
+          className="action-button all-ads-button"
+          onClick={() => navigate('/all-ads')}
+        >
+          📋 Összes hirdetés
+        </button>
+      </div>
 
       {selectedCategories.map((category) => (
         <CategorySection

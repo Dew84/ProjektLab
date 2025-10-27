@@ -26,6 +26,10 @@ namespace TradeByte.Controllers
         /// </summary>
         /// <param name="keyword">Keresés a címben és leírásban</param>
         /// <param name="categoryId">Szűrés kategória szerint</param>
+        /// <param name="minPrice">Minimum ár</param>
+        /// <param name="maxPrice">Maximum ár</param>
+        /// <param name="sortBy">Rendezés mező (price, title, createdAt)</param>
+        /// <param name="sortDesc">Csökkenő rendezés</param>
         /// <param name="page">Oldal száma (1-től kezdődően)</param>
         /// <param name="pageSize">Elemek száma oldalanként</param>
         /// <param name="ct">Cancellation token</param>
@@ -35,6 +39,10 @@ namespace TradeByte.Controllers
         public async Task<ActionResult<PagedResult<AdDto>>> GetAds(
             [FromQuery] string? keyword = null,
             [FromQuery] int? categoryId = null,
+            [FromQuery] decimal? minPrice = null,
+            [FromQuery] decimal? maxPrice = null,
+            [FromQuery] string? sortBy = null,
+            [FromQuery] bool? sortDesc = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20,
             CancellationToken ct = default)
@@ -43,6 +51,10 @@ namespace TradeByte.Controllers
             {
                 Keyword = keyword,
                 CategoryId = categoryId,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                SortBy = sortBy,
+                SortDesc = sortDesc,
                 Page = page,
                 PageSize = pageSize
             };
