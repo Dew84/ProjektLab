@@ -20,6 +20,12 @@ namespace TradeByte.Repositories
             return Task.CompletedTask;
         }
 
+        public async Task<IEnumerable<Conversation>> GetAllConversationsByUserIdAsync(int userId, CancellationToken ct = default)
+        {
+            return await _context.Conversations
+                .Where(c => c.User1Id == userId || c.User2Id == userId).ToListAsync(ct);
+        }
+
         public async Task<Conversation?> GetConversationByIdAsync(int id, CancellationToken ct = default)
         {
             return await _context.Conversations.FindAsync(id , ct);
@@ -28,7 +34,8 @@ namespace TradeByte.Repositories
         public async Task<Conversation?> GetConversationByParticipantsAsync(int user1Id, int user2Id, CancellationToken ct = default)
         {
             return await _context.Conversations
-                .FirstOrDefaultAsync(c => c.User1Id == user1Id && c.User2Id == user2Id);
+                .FirstOrDefaultAsync(c => c.User1Id == user1Id && c.User2Id == user2Id 
+                                       || c.User1Id == user2Id && c.User2Id == user1Id, ct);
         }
     }
 }

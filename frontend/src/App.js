@@ -14,6 +14,8 @@ import AllCategoriesPage from './pages/AllCategoriesPage';
 import AllAdsPage from './pages/AllAdsPage';
 import './App.css';
 import authService from './services/authService';
+import ChatPage from './pages/ChatPage';
+import OwnConversationListPage from './pages/OwnConversationListPage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -37,11 +39,11 @@ function App() {
           setCategoryId={setCategoryId}
           setSelectedAdId={setSelectedAdId}
         />
-        
+
         <Routes>
           {/* Főoldal */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
               <HomePage
                 user={user}
@@ -50,68 +52,78 @@ function App() {
                 homeCategories={homeCategories}
                 setHomeCategories={setHomeCategories}
               />
-            } 
+            }
           />
 
           {/* ÚJ: Összes kategória */}
-          <Route 
-            path="/categories" 
-            element={<AllCategoriesPage />} 
+          <Route
+            path="/categories"
+            element={<AllCategoriesPage />}
           />
 
           {/* ÚJ: Összes hirdetés */}
-          <Route 
-            path="/all-ads" 
-            element={<AllAdsPage />} 
+          <Route
+            path="/all-ads"
+            element={<AllAdsPage />}
           />
 
           {/* Auth oldalak */}
-          <Route 
-            path="/login" 
-            element={<LoginPage setUser={setUser} />} 
+          <Route
+            path="/login"
+            element={<LoginPage setUser={setUser} />}
           />
-          <Route 
-            path="/register" 
-            element={<RegisterPage setUser={setUser} />} 
+          <Route
+            path="/register"
+            element={<RegisterPage setUser={setUser} />}
           />
 
           {/* Profil */}
-          <Route 
-            path="/profile" 
-            element={user ? <ProfilePage user={user} /> : <Navigate to="/login" />} 
+          <Route
+            path="/profile"
+            element={user ? <ProfilePage user={user} /> : <Navigate to="/login" />}
           />
 
           {/* Hirdetések */}
-          <Route 
-            path="/ads" 
+          <Route
+            path="/ads"
             element={
               <AdListPage
                 categoryId={categoryId}
                 setSelectedAdId={setSelectedAdId}
               />
-            } 
+            }
           />
-          <Route 
-            path="/ads/:id" 
-            element={<AdDetailPage />} 
+          <Route
+            path="/ads/:id"
+            element={<AdDetailPage/>}
           />
-          <Route 
-            path="/ads/create" 
-            element={user ? <CreateAdPage user={user} /> : <Navigate to="/login" />} 
+          <Route
+            path="/ads/create"
+            element={user ? <CreateAdPage user={user} /> : <Navigate to="/login" />}
           />
-          <Route 
-            path="/ads/edit/:id" 
-            element={user ? <CreateAdPage user={user} /> : <Navigate to="/login" />} 
+          <Route
+            path="/ads/edit/:id"
+            element={user ? <CreateAdPage user={user} /> : <Navigate to="/login" />}
           />
-          <Route 
-            path="/my-ads" 
-            element={user ? <OwnAdListPage setSelectedAdId={setSelectedAdId} /> : <Navigate to="/login" />} 
+          <Route
+            path="/my-ads"
+            element={user ? <OwnAdListPage setSelectedAdId={setSelectedAdId} /> : <Navigate to="/login" />}
           />
 
           {/* Admin */}
-          <Route 
-            path="/admin" 
-            element={user?.role?.toLowerCase().includes('admin') ? <AdminPage user={user} /> : <Navigate to="/" />} 
+          <Route
+            path="/admin"
+            element={user?.role?.toLowerCase().includes('admin') ? <AdminPage user={user} /> : <Navigate to="/" />}
+          />
+          {/* Egy beszélgetés */}
+          <Route
+            path="/chat/:user2Id"
+            element={user ? <ChatPage user1={user} /> : <Navigate to="/login" />}
+          />
+          {/* Üzenetek */}
+          <Route
+            path="/conversations"
+            element={user ? <OwnConversationListPage owner={user} /> : <Navigate to="/login" />}
           />
         </Routes>
       </div>

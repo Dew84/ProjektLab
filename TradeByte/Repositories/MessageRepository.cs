@@ -29,10 +29,11 @@ namespace TradeByte.Repositories
            return await _context.Messages.SingleAsync(x => x.Id == messageId);
         }
 
-        public Task<IEnumerable<Message>> GetMessagesByConversationId(int conversationId, CancellationToken ct = default)
+        public async Task<IEnumerable<Message>> GetMessagesByConversationId(int conversationId, CancellationToken ct = default)
         {
-            _context.Messages.Where(x => x.ConversationId == conversationId);
-            return Task.FromResult(_context.Messages.AsEnumerable());
+            return await _context.Messages
+                .Where(x => x.ConversationId == conversationId)
+                .ToListAsync(ct);
         }
 
         public Task ModifyMessage(Message message, CancellationToken ct = default)

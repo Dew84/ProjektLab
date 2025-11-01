@@ -1,0 +1,65 @@
+.chat-box {
+  width: 100%;
+  max-width: 500px;
+  height: 500px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* --- Üzenetek listája --- */
+.messages-container {
+  flex: 1;                    /* kitölti a helyet */
+  overflow-y: auto;           /* lehessen scrollozni */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 5px;         /* hogy a scrollbar ne fedjen rá */
+}
+
+/* --- Buborék alap --- */
+.message {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* --- Saját üzenet jobb oldalt --- */
+.message.sent {
+  background: #DCF8C6;         /* zöldes világos */
+  align-self: flex-end;        /* jobb oldalra */
+}
+
+/* --- Kapott üzenet bal oldalt --- */
+.message.received {
+  background: #F1F1F1;
+  align-self: flex-start;      /* bal oldalra */
+}
+
+/* --- Input + gomb --- */
+.chat-box input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  flex: 1;
+}
+
+.chat-box button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #4A90E2;
+  color: white;
+  cursor: pointer;
+}
+
+.chat-box button:hover {
+  opacity: 0.9;
+}
+
+/* Ha input+gomb külön sorban vannak, nem kell külön wrapper */

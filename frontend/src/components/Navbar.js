@@ -25,14 +25,21 @@ function Navbar({ user, setUser, setSelectedAdId }) {
     console.log('Keresés:', searchQuery);
   };
 
+  const handleConversations = () => {
+    if (!user) {
+      alert('Bejelentkezés szükséges ehhez!');
+      return;
+    }
+    navigate('/conversations');
+  }
   const handleLogin = () => navigate('/login');
   const handleRegister = () => navigate('/register');
   const handleAdminPanel = () => navigate('/admin');
- const handleLogoClick = () => {
-  console.log('Főoldalra navigálás logo kattintással');
-  sessionStorage.setItem('keepHomeCategories', 'true');
-  navigate('/', { state: { fromNavigation: true } });
-};
+  const handleLogoClick = () => {
+    console.log('Főoldalra navigálás logo kattintással');
+    sessionStorage.setItem('keepHomeCategories', 'true');
+    navigate('/', { state: { fromNavigation: true } });
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -93,7 +100,9 @@ function Navbar({ user, setUser, setSelectedAdId }) {
                 <UserIcon size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
                 {user?.userName || user?.name || ''}
               </button>
-
+              <button className="navbar-button login-btn" onClick={handleConversations}>
+                Üzenetek
+              </button>
               <button className="navbar-button logout-btn" onClick={handleLogout}>
                 Kijelentkezés
               </button>

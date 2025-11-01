@@ -11,8 +11,8 @@ namespace TradeByte.Models
         public int User1Id { get; set; }
         public int User2Id { get; set; }
 
-        public User? Sender { get; set; }
-        public User? Receiver { get; set; }
+        public User? User1 { get; set; }
+        public User? User2 { get; set; }
 
     }
 }

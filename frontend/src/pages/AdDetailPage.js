@@ -15,8 +15,6 @@ function AdDetailPage() {
   const [ad, setAd] = useState(null);
   const [user, setUser] = useState(null);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     console.log('AdDetailPage betöltve - flag beállítása');
     sessionStorage.setItem('keepHomeCategories', 'true');
@@ -79,7 +77,7 @@ function AdDetailPage() {
           <div className="ad-contact">
             <h3>Kapcsolat</h3>
             <p>
-              <strong>Hirdető:</strong> {user ? user.userName : "Ismeretlen"}
+              <strong>Hirdető:</strong> {user ? user.userName : "Ismeretlen"}             
             </p>
             {user?.phoneNumber && <p>📞 {user.phoneNumber}</p>}
             {user?.email && <p>✉️ {user.email}</p>}

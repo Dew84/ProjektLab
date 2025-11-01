@@ -10,12 +10,10 @@ namespace TradeByte.Controllers
     public class MessageController : ControllerBase
     {
         private readonly IMessageService _messageService;
-        private readonly IUserService _userService;
 
-        public MessageController(IMessageService messageService, IUserService userService)
+        public MessageController(IMessageService messageService)
         {
             _messageService = messageService;
-            _userService = userService;
         }
 
         [HttpGet("{id}")]
@@ -30,6 +28,18 @@ namespace TradeByte.Controllers
             return Ok(message);
         }
 
+        [HttpGet("by-conversation/{id}")]
+        public async Task<ActionResult<Message>> GetByConversationId(int id, CancellationToken cancellationToken = default)
+        {
+            List<MessageDto> messages = await _messageService.GetMessagesByConversationIdAsync(id, cancellationToken);
+            if (messages == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(messages);
+        }
+
         [HttpPost]
         public async Task<ActionResult> SendMessage([FromBody] CreateMessageDto messageDto, CancellationToken cancellationToken = default)
         {
@@ -41,7 +51,7 @@ namespace TradeByte.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }                         
+            }
         }
 
         [HttpPut("{id}")]

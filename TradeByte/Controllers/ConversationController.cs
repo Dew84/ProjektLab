@@ -17,23 +17,30 @@ namespace TradeByte.Controllers
         }
 
         [HttpGet("{user1id}/{user2id}")]
-        public async Task<IActionResult> GetConversation(int user1id, int user2id)
-        {
-            ConversationDto? conversation = await _conversationService.GetConversationByParticipantsAsync(user1id, user2id);
-            if (conversation == null)
-            {
-                return NotFound();
-            }
-            return Ok(conversation);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateConversation([FromBody] CreateConversationDto conversationDto)
+        public async Task<IActionResult> GetConversation(int user1id, int user2id, [FromQuery] bool createIfNotExists)
         {
             try
             {
-                ConversationDto createdConversation = await _conversationService.CreateConversationAsync(conversationDto);
-                return Ok(createdConversation);
+                ConversationDto? conversation = await _conversationService.GetConversationByParticipantsAsync(user1id, user2id, createIfNotExists);
+                if (conversation == null)
+                {
+                    return NotFound();
+                }
+                return Ok(conversation);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAllConversationsByUserId(int userId)
+        {
+            try
+            {
+                IEnumerable<ConversationDto> conversations = await _conversationService.GetAllConversationsByUserIdAsync(userId);
+                return Ok(conversations);
             }
             catch (ArgumentException ex)
             {
