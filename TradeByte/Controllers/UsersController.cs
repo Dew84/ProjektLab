@@ -193,5 +193,15 @@ namespace TradeByte.Controllers
                 return Forbid(ex.Message);
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet("public/{id}")]
+        public async Task<ActionResult<UserPublicDto>> GetPublicById(int id, CancellationToken ct = default)
+        {
+            var result = await _userService.GetPublicByIdAsync(id, ct);
+            if (result == null) return NotFound();
+            return Ok(result);
+        }
+
     }
 }

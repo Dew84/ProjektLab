@@ -49,5 +49,12 @@ namespace TradeByte.Models
         /// Felhasználó jogosultsági csoportja
         /// </summary>
         public Role Role { get; set; }
+        public List<Rating> ReceivedRatings { get; set; } = new();
+        public List<Rating> GivenRatings { get; set; } = new();
+        //public string City { get; set; } = string.Empty;
+        public List<Classified> Classifieds { get; set; } = new();
+
+
+
     }
 }

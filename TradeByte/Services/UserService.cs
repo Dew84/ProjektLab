@@ -17,14 +17,44 @@ namespace TradeByte.Services
     {
         private readonly IUserRepository _users;
         private readonly IUnitOfWork _uow;
-        private readonly ICurrentUser _current; 
+        private readonly ICurrentUser _current;
+        private readonly IAdRepository _ads;
+        private readonly IRatingService _ratings;
 
-        public UserService(IUserRepository users, IUnitOfWork uow, ICurrentUser current)
+
+        public UserService(IUserRepository users, IUnitOfWork uow, ICurrentUser current,
+                          IRatingService ratings, IAdRepository ads)
         {
             _users = users;
             _uow = uow;
             _current = current;
+            _ads = ads;
+            _ratings = ratings;
         }
+
+
+        public async Task<UserPublicDto?> GetPublicByIdAsync(int userId, CancellationToken ct = default)
+        {
+            var user = await _users.GetByIdAsync(userId, ct);
+            if (user is null) return null;
+
+            var rating = await _ratings.GetSummaryAsync(userId, ct);
+            var adsCount = user.Classifieds?.Count ?? 0;
+
+            return new UserPublicDto
+            {
+                Id = user.Id,
+                UserName = user.Username,
+                Email = user.Email,               // ha nem publikus: vedd ki
+                PhoneNumber = user.PhoneNumber ?? string.Empty, // ha nem publikus: vedd ki
+                //City = user.City ?? string.Empty,
+                AdsCount = adsCount,
+                AverageRating = rating.Average,
+                RatingCount = rating.Count
+            };
+        }
+
+
 
         //  aktuális userId int-ként
         private int CurrentUserId
@@ -76,7 +106,7 @@ namespace TradeByte.Services
 
         public async Task<AdUserDto?> GetByAdToAdAsync(int userId, CancellationToken ct = default)
         {
-            User? user = await _users.GetByIdAsync(userId, ct) 
+            User? user = await _users.GetByIdAsync(userId, ct)
                         ?? throw new KeyNotFoundException("A megadott felhasználó nem található.");
             return new AdUserDto
             {

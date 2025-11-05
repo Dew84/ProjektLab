@@ -18,5 +18,7 @@ namespace TradeByte.Services.Interfaces
 
         /// <summary>Admin-only: felhasználó törlése.</summary>
         Task<bool> DeleteAsync(int userId, CancellationToken ct = default); // int
+        // Felhasználó nyilvános adatai (pl. profiloldalhoz)
+        Task<UserPublicDto?> GetPublicByIdAsync(int userId, CancellationToken ct = default);
     }
 }

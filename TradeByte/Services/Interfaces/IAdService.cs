@@ -19,5 +19,7 @@ namespace TradeByte.Services.Interfaces
         Task<int> CreateAsync(CreateAdDto dto, CancellationToken ct = default);
         Task<bool> UpdateAsync(int adId, UpdateAdDto dto, CancellationToken ct = default);
         Task<bool> DeleteAsync(int adId, CancellationToken ct = default);
+
+        Task<PagedResult<AdDto>> ListByUserAsync(int userId, PaginationQuery query, CancellationToken ct = default);
     }
 }

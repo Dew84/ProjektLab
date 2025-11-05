@@ -36,6 +36,19 @@ namespace TradeByte.Services
             _categories = categories;
         }
 
+        public async Task<PagedResult<AdDto>> ListByUserAsync(int userId, PaginationQuery query, CancellationToken ct = default)
+        {
+            var page = await _ads.ListByUserAsync(userId, query, sortBy: "createdAt", desc: true, ct: ct);
+
+            return new PagedResult<AdDto>
+            {
+                Items = page.Items.Select(MapToPublicDto).ToList(),
+                Total = page.Total,
+                Page = page.Page,
+                PageSize = page.PageSize
+            };
+        }
+
         //jelenlegi user Id int-ként. Unauthorized, ha nincs bejelentkezve vagy nem parse-olható.
         private int CurrentUserId
         {

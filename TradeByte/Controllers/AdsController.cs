@@ -211,5 +211,16 @@ namespace TradeByte.Controllers
                 return Unauthorized(new { message = ex.Message });
             }
         }
+
+        [AllowAnonymous]
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult<PagedResult<AdDto>>> GetByUser(
+        int id, [FromQuery] int page = 1, [FromQuery] int pageSize = 10, CancellationToken ct = default)
+        {
+            var query = new PaginationQuery { Page = page, PageSize = pageSize };
+            var result = await _adService.ListByUserAsync(id, query, ct);
+            return Ok(result);
+        }
+
     }
 }

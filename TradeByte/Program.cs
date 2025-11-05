@@ -32,7 +32,7 @@ namespace TradeByte
             builder.Services.AddScoped<IPictureService, PictureService>();
             builder.Services.AddScoped<IMessageService, MessageService>();
             builder.Services.AddScoped<IConversationService, ConversationService>();
-            /*builder.Services.AddScoped<IRatingService, RatingService>();*/
+            builder.Services.AddScoped<IRatingService, RatingService>();
 
             // Repositories
             builder.Services.AddScoped<IAdRepository, AdRepository>();
@@ -42,6 +42,7 @@ namespace TradeByte
             builder.Services.AddScoped<IMessageRepository, MessageRepository>();
             builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 
             // HttpContextAccessor a CurrentUser szolgáltatáshoz
             builder.Services.AddHttpContextAccessor();
