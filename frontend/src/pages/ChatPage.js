@@ -11,9 +11,6 @@ function ChatPage({ user1 }) {
   const [error, setError] = useState(null);
   const { user2Id } = useParams();
 
-  console.log('ChatPage betöltve user2Id:', user2Id);
-  console.log('ChatPage betöltve user1Id:', user1.id);
-
   const user2IdNum = parseInt(user2Id, 10);
   useEffect(() => {
     if (!user1 || !user2IdNum) return;
@@ -48,6 +45,7 @@ function ChatPage({ user1 }) {
   const handleButtonClick = (message) => {
     console.log('Üzenet küldése:', message);
     try {
+      if (message.trim() === '') alert('Az üzenet nem lehet üres.')
       messageService.sendMessage({
         conversationId: conversation.id,
         senderId: user1.id,

@@ -31,6 +31,7 @@ namespace TradeByte.Controllers
         /// <param name="sortBy">Rendezés mező (price, title, createdAt)</param>
         /// <param name="sortDesc">Csökkenő rendezés</param>
         /// <param name="page">Oldal száma (1-től kezdődően)</param>
+        /// <param name="userId">Felhasználó ID-ja</param> 
         /// <param name="pageSize">Elemek száma oldalanként</param>
         /// <param name="ct">Cancellation token</param>
         /// <returns>Lapozott hirdetések listája</returns>
@@ -43,6 +44,7 @@ namespace TradeByte.Controllers
             [FromQuery] decimal? maxPrice = null,
             [FromQuery] string? sortBy = null,
             [FromQuery] bool? sortDesc = null,
+            [FromQuery] int? userId = null,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 20,
             CancellationToken ct = default)
@@ -56,7 +58,8 @@ namespace TradeByte.Controllers
                 SortBy = sortBy,
                 SortDesc = sortDesc,
                 Page = page,
-                PageSize = pageSize
+                PageSize = pageSize,
+                UserId = userId
             };
 
             var result = await _adService.ListAsync(query, ct);

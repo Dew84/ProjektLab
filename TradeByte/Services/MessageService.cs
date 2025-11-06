@@ -34,6 +34,7 @@ namespace TradeByte.Services
                 ?? throw new KeyNotFoundException($"A megadott üzenet nem található: {updateMessage.Id}");
 
             message.Content = updateMessage.Content;
+            message.IsRead = updateMessage.IsRead;
 
             await _messageRepository.ModifyMessage(message, ct);
             await _unitOfWork.SaveChangesAsync();
@@ -50,7 +51,8 @@ namespace TradeByte.Services
                 ConversationId = message.ConversationId,
                 SenderId = message.SenderId,
                 Content = message.Content,
-                SentAt = message.SentAt
+                SentAt = message.SentAt,
+                IsRead = message.IsRead
             };
         }
 
@@ -67,7 +69,8 @@ namespace TradeByte.Services
                 ConversationId = message.ConversationId,
                 SenderId = message.SenderId,
                 Content = message.Content,
-                SentAt = message.SentAt
+                SentAt = message.SentAt,
+                IsRead = message.IsRead
             }).ToList();
         }
 
@@ -80,7 +83,8 @@ namespace TradeByte.Services
                 ConversationId = conversation.Id,
                 SenderId = message.SenderId,
                 Content = message.Content,
-                SentAt = DateTime.UtcNow
+                SentAt = DateTime.UtcNow,
+                IsRead = false
             };
 
             await _messageRepository.AddMessageAsync(newMessage, ct);
@@ -92,7 +96,8 @@ namespace TradeByte.Services
                 ConversationId = newMessage.ConversationId,
                 SenderId = newMessage.SenderId,
                 Content = newMessage.Content,
-                SentAt = newMessage.SentAt
+                SentAt = newMessage.SentAt,
+                IsRead = newMessage.IsRead
             };
         }
     }

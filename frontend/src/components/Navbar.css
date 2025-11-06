@@ -207,3 +207,40 @@
     font-size: 1.5rem;
   }
 }
+
+.notification-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px; /* vagy a saját gombod méretéhez */
+  border: none;
+  border-radius: 8px;
+  background-color: #ccc;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Hover, ha kell */
+.notification-btn:hover {
+  background-color: #bbb;
+}
+
+/* A kis piros jelző */
+.notification-btn .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  min-height: 18px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 2px white; /* kis fehér kontúr, ha szeretnéd */
+}

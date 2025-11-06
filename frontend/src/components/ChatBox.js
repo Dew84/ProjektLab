@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './ChatBox.css';
 
 function ChatBox({ messages, user1Id, handleButtonClick }) {
     const [newMessage, setNewMessage] = useState('');

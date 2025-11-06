@@ -99,3 +99,14 @@
   color: #d33;
   padding: 40px;
 }
+
+.username-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.username-link:hover {
+  text-decoration: underline;
+}

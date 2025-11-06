@@ -16,6 +16,7 @@ import './App.css';
 import authService from './services/authService';
 import ChatPage from './pages/ChatPage';
 import OwnConversationListPage from './pages/OwnConversationListPage';
+import PublicProfilePage from './pages/PublicProfilePage';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -125,6 +126,7 @@ function App() {
             path="/conversations"
             element={user ? <OwnConversationListPage owner={user} /> : <Navigate to="/login" />}
           />
+          <Route path="/userProfile" element={<PublicProfilePage />} />
         </Routes>
       </div>
     </Router>

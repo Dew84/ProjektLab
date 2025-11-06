@@ -85,6 +85,12 @@ namespace TradeByte.Repositories
                 q = q.Where(a => a.Price <= query.MaxPrice.Value);
             }
 
+            // eladó user szűrő
+            if (query.UserId.HasValue)
+            {
+                q = q.Where(a => a.UserId == query.UserId.Value);
+            }
+
             var total = await q.CountAsync(ct);
 
             // lapozás mindig rendezéssel

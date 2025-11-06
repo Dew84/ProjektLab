@@ -8,12 +8,14 @@ import { formatDateTime } from "../services/adService";
 import "./AdDetailPage.css";
 
 function AdDetailPage() {
-  const { id } = useParams(); // URL-ből olvassuk az ID-t
+  const { id } = useParams();
   const [pictures, setPictures] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [ad, setAd] = useState(null);
   const [user, setUser] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('AdDetailPage betöltve - flag beállítása');
@@ -77,8 +79,19 @@ function AdDetailPage() {
           <div className="ad-contact">
             <h3>Kapcsolat</h3>
             <p>
-              <strong>Hirdető:</strong> {user ? user.userName : "Ismeretlen"}             
+              <strong>Hirdető:</strong>{" "}
+              {user ? (
+                <span
+                  className="username-link"
+                   onClick={() => navigate("/userProfile", { state: { user } })}
+                >
+                  {user.userName}
+                </span>
+              ) : (
+                "Ismeretlen"
+              )}
             </p>
+
             {user?.phoneNumber && <p>📞 {user.phoneNumber}</p>}
             {user?.email && <p>✉️ {user.email}</p>}
           </div>

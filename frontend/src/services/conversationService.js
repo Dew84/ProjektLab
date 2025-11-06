@@ -20,6 +20,16 @@ const conversationService = {
       console.error('Hiba a beszélgetések lekérésekor:', error.response);
       throw error;
     }
+  },
+  // Van-e a felhasználónak olvasatlan üzenete
+  getNewMessageExistByUserId: async (userId) => {
+    try {
+      const res = await api.get(`/conversation/has-newmessages${userId}`);
+      return res.status;
+    } catch (error) {
+      console.error('Hiba az új üzenetek lekérésekor:', error.response);
+      throw error;
+    }
   }
 };
 

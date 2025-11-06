@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using TradeByte.Dtos.Ads;
 using TradeByte.Dtos.Conversation;
 using TradeByte.Models;
@@ -11,11 +12,13 @@ namespace TradeByte.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConversationRepository _conversationRepository;
         private readonly IUserRepository _userRepository;
-        public ConversationService(IUnitOfWork unitOfWork, IConversationRepository conversationRepository, IUserRepository userRepository)
+        private readonly IMessageRepository _messageRepository;
+        public ConversationService(IUnitOfWork unitOfWork, IConversationRepository conversationRepository, IUserRepository userRepository, IMessageRepository messageRepository)
         {
             _unitOfWork = unitOfWork;
             _conversationRepository = conversationRepository;
             _userRepository = userRepository;
+            _messageRepository = messageRepository;
         }
 
         public async Task<IEnumerable<ConversationDto>> GetAllConversationsByUserIdAsync(int userId, CancellationToken ct = default)
@@ -38,7 +41,7 @@ namespace TradeByte.Services
                 {
                     return null;
                 }
-                
+
                 conversation = new Conversation
                 {
                     User1Id = user1Id,
@@ -54,6 +57,19 @@ namespace TradeByte.Services
                 User1Id = conversation.User1Id,
                 User2Id = conversation.User2Id
             };
+        }
+
+        public async Task<bool> GetNewMessagesExistAsync(int userId, CancellationToken ct = default)
+        {
+            bool result = false;
+            IEnumerable<Conversation> conversations = await _conversationRepository.GetAllConversationsByUserIdAsync(userId, ct);
+            int index = 0;
+            while (!result && conversations.Any())
+            {
+                IEnumerable<Message> messages = await _messageRepository.GetMessagesByConversationId(conversations.ElementAt(index).Id);
+                result = messages.Where(x => x.IsRead == false).Any();
+            }
+            return result;
         }
     }
 }

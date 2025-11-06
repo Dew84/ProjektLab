@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
-import { User as UserIcon } from 'lucide-react';
+import { Badge, User as UserIcon } from 'lucide-react';
+import conversationService from '../services/conversationService';
 
 function Navbar({ user, setUser, setSelectedAdId }) {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+  const [hasNewMessages, setHasNewMessages] = useState(false);
+
+  useEffect(() => {
+    const checkMessages = async () => {
+      if (!user) return;
+
+      try {
+        const response = await conversationService.getNewMessageExistByUserId(user.id);
+        if (response.status === 200) {
+          setHasNewMessages(true);
+        } else {
+          setHasNewMessages(false);
+        }
+      } catch (err) {
+        console.error("Nem sikerült lekérdezni az üzeneteket:", err);
+        setHasNewMessages(false);
+      }
+    };
+
+    checkMessages();
+  }, [user]);
+
 
   const isAdmin = String(user?.role ?? user?.Role ?? user?.roles ?? '')
     .toLowerCase()
@@ -100,8 +123,9 @@ function Navbar({ user, setUser, setSelectedAdId }) {
                 <UserIcon size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
                 {user?.userName || user?.name || ''}
               </button>
-              <button className="navbar-button login-btn" onClick={handleConversations}>
+              <button className="navbar-button notification-btn" onClick={handleConversations}>
                 Üzenetek
+                {hasNewMessages && <span className="badge">!</span>}
               </button>
               <button className="navbar-button logout-btn" onClick={handleLogout}>
                 Kijelentkezés

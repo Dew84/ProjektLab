@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TradeByte.Context;
 
@@ -10,9 +11,11 @@ using TradeByte.Context;
 namespace TradeByte.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251104065314_AddIsReadField")]
+    partial class AddIsReadField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.9");
@@ -30,34 +33,6 @@ namespace TradeByte.Migrations
                     b.HasIndex("ClassifiedsId");
 
                     b.ToTable("CategoryClassified");
-                });
-
-            modelBuilder.Entity("Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("RatedUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RaterUserId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Value")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RatedUserId");
-
-                    b.HasIndex("RaterUserId", "RatedUserId")
-                        .IsUnique();
-
-                    b.ToTable("Ratings");
                 });
 
             modelBuilder.Entity("TradeByte.Models.Category", b =>
@@ -239,29 +214,10 @@ namespace TradeByte.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Rating", b =>
-                {
-                    b.HasOne("TradeByte.Models.User", "RatedUser")
-                        .WithMany("ReceivedRatings")
-                        .HasForeignKey("RatedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("TradeByte.Models.User", "RaterUser")
-                        .WithMany("GivenRatings")
-                        .HasForeignKey("RaterUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("RatedUser");
-
-                    b.Navigation("RaterUser");
-                });
-
             modelBuilder.Entity("TradeByte.Models.Classified", b =>
                 {
                     b.HasOne("TradeByte.Models.User", "User")
-                        .WithMany("Classifieds")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -332,15 +288,6 @@ namespace TradeByte.Migrations
             modelBuilder.Entity("TradeByte.Models.Classified", b =>
                 {
                     b.Navigation("Pictures");
-                });
-
-            modelBuilder.Entity("TradeByte.Models.User", b =>
-                {
-                    b.Navigation("Classifieds");
-
-                    b.Navigation("GivenRatings");
-
-                    b.Navigation("ReceivedRatings");
                 });
 #pragma warning restore 612, 618
         }
