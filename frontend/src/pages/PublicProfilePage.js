@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import adService from '../services/adService';
+import api from '../services/api';
 
 export default function PublicProfilePage({ setSelectedAdId }) {
-    const { userId } = useParams();            // /users/public/:userId
+    // /users/public/:userId -> param string, konvertáljuk numberré
+    const { userId: userIdParam } = useParams();
+    const userId = Number(userIdParam);
     const navigate = useNavigate();
 
     const [userData, setUserData] = useState(null);
@@ -25,7 +28,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         }
     })();
 
-    const canRate = !!me && me.id?.toString() !== userId;
+    const canRate = !!me && me.id !== userId;
 
     // === 1) PUBLIC USER INFO BETÖLTÉSE ===
     useEffect(() => {
@@ -34,10 +37,9 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         async function loadUser() {
             try {
                 setLoading(true);
-                const res = await fetch(`/api/users/public/${userId}`);
-                if (!res.ok) throw new Error('Felhasználó nem található');
 
-                const data = await res.json();
+                const res = await api.get(`/users/public/${userId}`);
+                const data = res.data;
                 if (!alive) return;
 
                 setUserData(data);
@@ -51,8 +53,16 @@ export default function PublicProfilePage({ setSelectedAdId }) {
             }
         }
 
-        loadUser();
-        return () => { alive = false; };
+        if (!Number.isNaN(userId)) {
+            loadUser();
+        } else {
+            setError('Érvénytelen felhasználó azonosító.');
+            setLoading(false);
+        }
+
+        return () => {
+            alive = false;
+        };
     }, [userId]);
 
     // === 2) USER HIRDETÉSEINEK BETÖLTÉSE ===
@@ -74,8 +84,13 @@ export default function PublicProfilePage({ setSelectedAdId }) {
             }
         }
 
-        loadAds();
-        return () => { alive = false; };
+        if (!Number.isNaN(userId)) {
+            loadAds();
+        }
+
+        return () => {
+            alive = false;
+        };
     }, [userId, pageSize]);
 
     // === 3) ÉRTÉKELÉS KÜLDÉSE ===
@@ -83,27 +98,18 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         if (!canRate) return;
 
         try {
-            const res = await fetch('/api/ratings', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
-                },
-                body: JSON.stringify({
-                    ratedUserId: Number(userId),
-                    value,
-                }),
+            // Token az api instance-ben van beállítva (authService.login/register után)
+            await api.post('/ratings', {
+                ratedUserId: userId,
+                value,
             });
 
-            if (!res.ok) throw new Error('Értékelés nem sikerült');
+            const summaryRes = await api.get(`/ratings/${userId}/summary`);
+            const summary = summaryRes.data;
 
-            const summaryRes = await fetch(`/api/ratings/${userId}/summary`);
-            if (summaryRes.ok) {
-                const summary = await summaryRes.json();
-                setAvgRating(Number(summary.average ?? 0));
-                setRatingCount(Number(summary.count ?? 0));
-                setMyRating(value);
-            }
+            setAvgRating(Number(summary.average ?? 0));
+            setRatingCount(Number(summary.count ?? 0));
+            setMyRating(value);
         } catch (err) {
             console.error(err);
             alert('Hiba történt az értékelés közben.');
@@ -137,16 +143,28 @@ export default function PublicProfilePage({ setSelectedAdId }) {
             </div>
 
             {/* ÉRTÉKELÉS ÖSSZEGZÉS */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '16px 0' }}>
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    margin: '16px 0',
+                }}
+            >
                 <strong>Értékelés:</strong>
                 <span title={`${avgRating.toFixed(1)} / 5`}>
-                    {Array.from({ length: 5 }).map((_, i) => {
-                        const filled = i < Math.round(avgRating - 0.001);
-                        return (
-                            <span key={i} style={{ color: filled ? '#FFC107' : '#ccc', fontSize: 20 }}>★</span>
-                        );
-                    })}
-                </span>
+          {Array.from({ length: 5 }).map((_, i) => {
+              const filled = i < Math.round(avgRating - 0.001);
+              return (
+                  <span
+                      key={i}
+                      style={{ color: filled ? '#FFC107' : '#ccc', fontSize: 20 }}
+                  >
+                ★
+              </span>
+              );
+          })}
+        </span>
                 <span>({ratingCount})</span>
             </div>
 
@@ -171,12 +189,14 @@ export default function PublicProfilePage({ setSelectedAdId }) {
                                 onMouseLeave={() => setHover(0)}
                                 onClick={() => handleRate(index)}
                             >
-                                ★
-                            </span>
+                ★
+              </span>
                         );
                     })}
 
-                    {myRating > 0 && <span style={{ marginLeft: 8 }}>({myRating}/5)</span>}
+                    {myRating > 0 && (
+                        <span style={{ marginLeft: 8 }}>({myRating}/5)</span>
+                    )}
                 </div>
             )}
 
@@ -190,7 +210,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
                         value={pageSize}
                         onChange={(e) => setPageSize(Number(e.target.value))}
                     >
-                        {[10, 20, 50].map(size => (
+                        {[10, 20, 50].map((size) => (
                             <option key={size} value={size}>
                                 {size}/oldal
                             </option>
@@ -199,7 +219,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
                 </div>
 
                 <ul>
-                    {ads.map(ad => (
+                    {ads.map((ad) => (
                         <li key={ad.id} style={{ marginBottom: 8 }}>
                             <a
                                 href="#"

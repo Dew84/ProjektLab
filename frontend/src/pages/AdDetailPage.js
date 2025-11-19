@@ -84,7 +84,8 @@ function AdDetailPage() {
               {user ? (
                 <span
                   className="username-link"
-                   onClick={() => navigate("/users/public/${user.id}", { state: { user } })}
+                  onClick={() => navigate(`/users/public/${user.id}`, { state: { user } })}
+
                 >
                   {user.userName}
                 </span>
