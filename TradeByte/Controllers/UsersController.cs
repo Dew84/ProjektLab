@@ -23,8 +23,6 @@ namespace TradeByte.Controllers
         /// <summary>
         /// Saját profil megtekintése (bejelentkezés szükséges)
         /// </summary>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Felhasználó adatai</returns>
         [HttpGet("me")]
         [Authorize]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -51,9 +49,6 @@ namespace TradeByte.Controllers
         /// <summary>
         /// Saját profil módosítása (bejelentkezés szükséges)
         /// </summary>
-        /// <param name="dto">Módosított adatok</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Módosítás eredménye</returns>
         [HttpPut("me")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -85,9 +80,6 @@ namespace TradeByte.Controllers
         /// <summary>
         /// Felhasználó lekérése azonosító alapján (saját vagy admin jogosultság szükséges)
         /// </summary>
-        /// <param name="id">Felhasználó azonosítója</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Felhasználó adatai</returns>
         [HttpGet("{id:int}")]
         [Authorize]
         [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
@@ -108,39 +100,49 @@ namespace TradeByte.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
+                // Ha a service ilyenkor kivételt dob, itt tiltjuk le.
                 return Forbid(ex.Message);
             }
         }
 
         /// <summary>
-        /// Felhasználó lekérése hirdetés adatai miatt
+        /// Publikus profil (nyilvános mezők)
         /// </summary>
-        /// <param name="id">Felhasználó azonosítója</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Felhasználó adatai</returns>
+        [AllowAnonymous]
         [HttpGet("public/{id:int}")]
-        [ProducesResponseType(typeof(AdUserDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(UserPublicDto), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<UserDto>> GetUserToAd(int id, CancellationToken ct = default)
+        public async Task<ActionResult<UserPublicDto>> GetPublicById(int id, CancellationToken ct = default)
         {
-            AdUserDto? user = await _userService.GetByAdToAdAsync(id, ct);
-            
+            var result = await _userService.GetPublicByIdAsync(id, ct);
+            if (result == null)
+            {
+                return NotFound(new { message = "Felhasználó nem található." });
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Hirdetéshez szűkített felhasználói adatok
+        /// </summary>
+        [AllowAnonymous]
+        [HttpGet("public/{id:int}/for-ad")]
+        [ProducesResponseType(typeof(AdUserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AdUserDto>> GetUserToAd(int id, CancellationToken ct = default)
+        {
+            var user = await _userService.GetByAdToAdAsync(id, ct);
             if (user == null)
             {
                 return NotFound(new { message = "Felhasználó nem található." });
             }
 
             return Ok(user);
-            
         }
 
         /// <summary>
         /// Összes felhasználó listázása (admin jogosultság szükséges)
         /// </summary>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Felhasználók listája</returns>
         [HttpGet]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(IReadOnlyList<UserDto>), StatusCodes.Status200OK)]
@@ -162,9 +164,6 @@ namespace TradeByte.Controllers
         /// <summary>
         /// Felhasználó törlése (admin jogosultság szükséges)
         /// </summary>
-        /// <param name="id">Felhasználó azonosítója</param>
-        /// <param name="ct">Cancellation token</param>
-        /// <returns>Törlés eredménye</returns>
         [HttpDelete("{id:int}")]
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -193,15 +192,5 @@ namespace TradeByte.Controllers
                 return Forbid(ex.Message);
             }
         }
-
-        [AllowAnonymous]
-        [HttpGet("public/{id}")]
-        public async Task<ActionResult<UserPublicDto>> GetPublicById(int id, CancellationToken ct = default)
-        {
-            var result = await _userService.GetPublicByIdAsync(id, ct);
-            if (result == null) return NotFound();
-            return Ok(result);
-        }
-
     }
 }

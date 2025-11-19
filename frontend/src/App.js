@@ -16,6 +16,8 @@ import './App.css';
 import authService from './services/authService';
 import ChatPage from './pages/ChatPage';
 import OwnConversationListPage from './pages/OwnConversationListPage';
+import UserProfilePage from './pages/UserProfilePage';
+
 import PublicProfilePage from './pages/PublicProfilePage';
 
 function App() {
@@ -23,6 +25,13 @@ function App() {
   const [categoryId, setCategoryId] = useState(null);
   const [selectedAdId, setSelectedAdId] = useState(null);
   const [homeCategories, setHomeCategories] = useState([]);
+
+
+  function RequireAuth({ user, children }) {
+    if (!user) return <Navigate to="/login" replace />;
+    return children;
+  }
+
 
   useEffect(() => {
     if (authService.isAuthenticated()) {
@@ -55,6 +64,14 @@ function App() {
               />
             }
           />
+          <Route
+              path="/ads/own"
+              element={
+                <RequireAuth user={user}>
+                  <OwnAdListPage user={user} setSelectedAdId={setSelectedAdId} />
+                </RequireAuth>
+                }
+                  />
 
           {/* ÚJ: Összes kategória */}
           <Route
@@ -126,6 +143,8 @@ function App() {
             path="/conversations"
             element={user ? <OwnConversationListPage owner={user} /> : <Navigate to="/login" />}
           />
+          <Route path="/users/:userId" element={<UserProfilePage />} />
+
           <Route path="/userProfile" element={<PublicProfilePage />} />
         </Routes>
       </div>

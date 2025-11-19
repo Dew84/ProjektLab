@@ -1,10 +1,12 @@
 // src/pages/ProfilePage.js
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ÚJ
 import userService from '../services/userService';
 import './ProfilePage.css';
 
 export default function ProfilePage(props) {
     const { onBackHome, setCurrentPage } = props;
+    const navigate = useNavigate(); // ÚJ
 
     const [userName, setUserName] = useState('');
     const [email, setEmail]       = useState('');
@@ -14,13 +16,22 @@ export default function ProfilePage(props) {
     const [error, setError]       = useState('');
 
     const goHome = () => {
+        // 1) Ha van explicit callback:
         if (typeof onBackHome === 'function') return onBackHome();
-        if (typeof setCurrentPage === 'function') return setCurrentPage('home');
+
+        // 2) Ha valahol még state-alapú navigációt használsz:
+        if (typeof setCurrentPage === 'function') return setCurrentPage('home'); // NEM 'goHome'!
+
+        // 3) Alapértelmezett: Routeres navigáció a főoldalra:
+        sessionStorage.setItem('keepHomeCategories', 'true');
+        navigate('/', { state: { fromNavigation: true } });
     };
 
     const goOwnAds = () => {
-       
-        if (typeof setCurrentPage === 'function') return setCurrentPage('ownAds'); 
+        // Ha van state-alapú lapozás:
+        if (typeof setCurrentPage === 'function') return setCurrentPage('ownAds');
+        // Egyébként router:
+        navigate('/ads/own');
     };
 
     useEffect(() => {
@@ -121,12 +132,11 @@ export default function ProfilePage(props) {
                 {info  && <p style={{ color: 'green', marginTop: 8 }}>{info}</p>}
                 {error && <p style={{ color: 'red',   marginTop: 8 }}>{error}</p>}
 
-                <button type="button" onClick={goOwnAds} style={{ marginTop: 12 }}>
-                    Saját hirdetéseim
-                </button>
-                <button type="button" onClick={goHome} style={{ marginTop: 12 }}>
-                    Vissza a főoldalra
-                </button>
+                <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                    <button type="button" onClick={goHome}>
+                        Vissza a főoldalra
+                    </button>
+                </div>
             </div>
         </div>
     );

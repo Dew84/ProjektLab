@@ -81,10 +81,7 @@
 }
 
 .profile-card button {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  width: 100%;
 }
 
 .profile-card input,gi
