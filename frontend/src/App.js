@@ -16,7 +16,6 @@ import './App.css';
 import authService from './services/authService';
 import ChatPage from './pages/ChatPage';
 import OwnConversationListPage from './pages/OwnConversationListPage';
-import UserProfilePage from './pages/UserProfilePage';
 
 import PublicProfilePage from './pages/PublicProfilePage';
 
@@ -64,6 +63,7 @@ function App() {
               />
             }
           />
+          /* ugyanaz mint a my-ads nem?*/
           <Route
               path="/ads/own"
               element={
@@ -72,6 +72,8 @@ function App() {
                 </RequireAuth>
                 }
                   />
+
+          <Route path="/users/public/:userId" element={<PublicProfilePage />} />
 
           {/* ÚJ: Összes kategória */}
           <Route
@@ -143,9 +145,12 @@ function App() {
             path="/conversations"
             element={user ? <OwnConversationListPage owner={user} /> : <Navigate to="/login" />}
           />
-          <Route path="/users/:userId" element={<UserProfilePage />} />
 
-          <Route path="/userProfile" element={<PublicProfilePage />} />
+
+          <Route
+              path="/users/public/:userId"
+              element={<PublicProfilePage setSelectedAdId={setSelectedAdId} />}
+          />
         </Routes>
       </div>
     </Router>

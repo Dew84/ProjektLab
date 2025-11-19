@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import authService from '../services/authService';
 import userService from '../services/userService';
+import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'; // ugyanazt a stílust használhatja, mint a LoginPage
 
 export default function RegisterPage(props) {
@@ -16,12 +17,19 @@ export default function RegisterPage(props) {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
+  const navigate = useNavigate();
 
   const afterSuccess = (user) => {
-    if (typeof onRegisterSuccess === 'function') return onRegisterSuccess(user);
-    if (typeof setUser === 'function') setUser(user);
-    if (typeof setCurrentPage === 'function') setCurrentPage('home');
+    if (typeof onRegisterSuccess === 'function') {
+      onRegisterSuccess(user);
+    }
+    if (typeof setUser === 'function') {
+      setUser(user);
+    }
+    navigate('/'); // vagy navigate('/login'), ha először loginre akarod dobni
   };
+
+
 
   const goLogin = () => {
     if (typeof switchToLogin === 'function') return switchToLogin();

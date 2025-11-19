@@ -3,17 +3,23 @@ import adService, { formatDateTime } from '../services/adService';
 import PageSizeSelector from '../components/PageSizeSelector';
 import './OwnAdListPage.css';
 import pictureService from '../services/pictureService';
+import { useNavigate } from 'react-router-dom';
+
 
 function OwnAdListPage({ setCurrentPage, setUser, setSelectedAdId }) {
     const [ads, setAds] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [pageSize, setPageSize] = useState(20);
+    const navigate = useNavigate();
+
 
     const handleModify = async (adId) => {
         console.log('Modifying ad with id:', adId);
-        if (typeof setSelectedAdId === 'function') setSelectedAdId(adId);
-        if (typeof setCurrentPage === 'function') return setCurrentPage('createAd', { setUser, adId });
+        if (typeof setSelectedAdId === 'function') {
+            setSelectedAdId(adId);
+        }
+        navigate(`/ads/edit/${adId}`);
     }
 
     const handleDelete = async (adId) => {

@@ -18,21 +18,23 @@ namespace TradeByte.Repositories
         public async Task<User?> GetByIdAsync(int userId, CancellationToken ct = default) =>
             await _context.Users
                           .Include(u => u.Role)
+                          .Include(u => u.Classifieds)
                           .FirstOrDefaultAsync(u => u.Id == userId, ct);
 
-        // JAVÍTOTT: Role betöltése a login-hoz
+
         public async Task<User?> GetByEmailAsync(string email, CancellationToken ct = default) =>
             await _context.Users
                           .AsNoTracking()
                           .Include(u => u.Role) 
                           .FirstOrDefaultAsync(u => u.Email == email, ct);
 
-        // read-only -> NoTracking
+
         public async Task<IReadOnlyList<User>> GetAllAsync(CancellationToken ct = default) =>
             await _context.Users
                           .AsNoTracking()
                           .Include(u => u.Role)
                           .ToListAsync(ct);
+
 
         public async Task AddAsync(User user, CancellationToken ct = default) =>
             await _context.Users.AddAsync(user, ct);

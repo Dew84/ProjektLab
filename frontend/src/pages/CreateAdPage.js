@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import adService from "../services/adService";
 import categoryService from "../services/categoryService";
 import pictureService from "../services/pictureService";
@@ -7,13 +8,17 @@ import "./CreateAdPage.css";
 const API_URL = process.env.REACT_APP_API_URL;
 const BASE_URL = API_URL.replace(/\/api$/, "");
 
-function CreateAdPage({ userId, adId }) {
+function CreateAdPage({ user }) {
+  const { id } = useParams();               // /ads/create → undefined, /ads/edit/:id → pl. "7"
+  const adId = id ? parseInt(id, 10) : null;
+  const isEdit = !!adId;
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [categories, setCategories] = useState([]);
-  const [images, setImages] = useState([]); // új képfájlok
+  const [images, setImages] = useState([]);             // új képfájlok
   const [imagePreviews, setImagePreviews] = useState([]); // URL-ek (meglévő + új preview)
   const [originalImages, setOriginalImages] = useState([]); // eredeti képek az ad-ból
   const [loading, setLoading] = useState(false);
@@ -37,25 +42,26 @@ function CreateAdPage({ userId, adId }) {
 
   // Meglévő hirdetés betöltése
   useEffect(() => {
-    if (!adId) return;
+    if (!isEdit) return;
+
     const fetchAd = async () => {
       try {
         const ad = await adService.getAdById(adId);
         setTitle(ad.title);
         setDescription(ad.description);
         setPrice(ad.price);
-        setCategoryId(ad.categoryIds[0] || "");
+        setCategoryId(ad.categoryIds?.[0] || "");
         setSeller(ad.userId);
       } catch (err) {
         console.error("Hiba a hirdetés betöltésekor:", err);
       }
     };
     fetchAd();
-  }, [adId]);
+  }, [isEdit, adId]);
 
   // Képek betöltése meglévő hirdetéshez
   useEffect(() => {
-    if (!adId) return;
+    if (!isEdit) return;
 
     const fetchPictures = async () => {
       try {
@@ -65,7 +71,7 @@ function CreateAdPage({ userId, adId }) {
           url: `${BASE_URL}/images/${adId}/${p.fileName}`,
         }));
 
-        if(formatted.length === 0) {
+        if (formatted.length === 0) {
           setWarning("Ez a hirdetés nem tartalmaz képeket!");
         }
 
@@ -78,7 +84,7 @@ function CreateAdPage({ userId, adId }) {
     };
 
     fetchPictures();
-  }, [adId]);
+  }, [isEdit, adId]);
 
   // Új képek kezelése
   const handleImageChange = (e) => {
@@ -100,7 +106,9 @@ function CreateAdPage({ userId, adId }) {
     setLoading(true);
     setError("");
     setSuccessMessage("");
-    setSeller(userId);
+
+    // elmentjük a jelenlegi usert sellerként, ha kell
+    setSeller(user?.id ?? null);
 
     if (!title || !price) {
       setError("A cím és az ár kitöltése kötelező!");
@@ -119,7 +127,7 @@ function CreateAdPage({ userId, adId }) {
       const token = localStorage.getItem("token");
       let resultAd;
 
-      if (adId) {
+      if (isEdit) {
         // Módosítás
         resultAd = await adService.updateAd(adId, adData, token);
 
@@ -134,7 +142,6 @@ function CreateAdPage({ userId, adId }) {
         if (newImages.length > 0) {
           await pictureService.uploadPictures(adId, newImages);
         }
-
       } else {
         // Új hirdetés
         resultAd = await adService.createAd(adData, token);
@@ -143,14 +150,16 @@ function CreateAdPage({ userId, adId }) {
         }
       }
 
-      setSuccessMessage(adId ? "Sikeres módosítás!" : "Sikeres felvitel!");
-      if (!adId) {
+      setSuccessMessage(isEdit ? "Sikeres módosítás!" : "Sikeres felvitel!");
+      if (!isEdit) {
         setTitle("");
         setDescription("");
         setPrice("");
         setCategoryId("");
         setImages([]);
         setImagePreviews([]);
+        setOriginalImages([]);
+        setWarning("");
       }
     } catch (err) {
       console.error(err);
@@ -161,58 +170,87 @@ function CreateAdPage({ userId, adId }) {
   };
 
   return (
-    <div className="create-ad-page">
-      <h1>{adId ? "Hirdetés módosítása" : "Új hirdetés felvitele"}</h1>
-      <form className="create-ad-form" onSubmit={handleSubmit}>
-        {error && <div className="error">{error}</div>}
-        {successMessage && <div className="success">{successMessage}</div>}
-        {warning && <div className="warning">{warning}</div>}
+      <div className="create-ad-page">
+        <h1>{isEdit ? "Hirdetés módosítása" : "Új hirdetés felvitele"}</h1>
+        <form className="create-ad-form" onSubmit={handleSubmit}>
+          {error && <div className="error">{error}</div>}
+          {successMessage && <div className="success">{successMessage}</div>}
+          {warning && <div className="warning">{warning}</div>}
 
-        <label>
-          Cím*:
-          <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        </label>
+          <label>
+            Cím*:
+            <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+            />
+          </label>
 
-        <label>
-          Leírás:
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
-        </label>
+          <label>
+            Leírás:
+            <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+            />
+          </label>
 
-        <label>
-          Ár*:
-          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
-        </label>
+          <label>
+            Ár*:
+            <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+            />
+          </label>
 
-        <label>
-          Kategória:
-          <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-            <option value="">Kérem válasszon!</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>{cat.name}</option>
+          <label>
+            Kategória:
+            <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+            >
+              <option value="">Kérem válasszon!</option>
+              {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Képek feltöltése:
+            <input
+                type="file"
+                multiple
+                accept=".jpg,.jpeg,.png"
+                onChange={handleImageChange}
+            />
+          </label>
+
+          {/* Képek előnézete */}
+          <div className="image-previews">
+            {imagePreviews.map((src, index) => (
+                <div key={index} className="image-preview">
+                  <img src={src} alt={`preview-${index}`} />
+                  <button type="button" onClick={() => removeImage(index)}>
+                    ✖
+                  </button>
+                </div>
             ))}
-          </select>
-        </label>
+          </div>
 
-        <label>
-          Képek feltöltése:
-          <input type="file" multiple accept=".jpg,.jpeg,.png" onChange={handleImageChange} />
-        </label>
-
-        {/* Képek előnézete */}
-        <div className="image-previews">
-          {imagePreviews.map((src, index) => (
-            <div key={index} className="image-preview">
-              <img src={src} alt={`preview-${index}`} />
-              <button type="button" onClick={() => removeImage(index)}>✖</button>
-            </div>
-          ))}
-        </div>
-
-        <button type="submit" disabled={loading}>
-          {loading ? "Feldolgozás..." : adId ? "Módosítás" : "Hirdetés felvitele"}
-        </button>
-      </form>
-    </div>
+          <button type="submit" disabled={loading}>
+            {loading
+                ? "Feldolgozás..."
+                : isEdit
+                    ? "Módosítás"
+                    : "Hirdetés felvitele"}
+          </button>
+        </form>
+      </div>
   );
 }
 

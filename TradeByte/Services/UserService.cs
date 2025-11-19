@@ -7,6 +7,8 @@ using TradeByte.Services.Interfaces;
 using TradeByte.Repositories.Interfaces;
 using TradeByte.Dtos.Users;
 using TradeByte.Models;
+using Microsoft.Data.Sqlite;
+
 
 namespace TradeByte.Services
 {
@@ -38,21 +40,41 @@ namespace TradeByte.Services
             var user = await _users.GetByIdAsync(userId, ct);
             if (user is null) return null;
 
-            var rating = await _ratings.GetSummaryAsync(userId, ct);
             var adsCount = user.Classifieds?.Count ?? 0;
+
+            double average = 0;
+            int count = 0;
+
+            try
+            {
+                // Próbáljuk meg lekérni az értékeléseket
+                var rating = await _ratings.GetSummaryAsync(userId, ct);
+
+                if (rating != null)
+                {
+                    average = rating.Average;
+                    count = rating.Count;
+                }
+            }
+            catch (SqliteException ex)
+            {
+                // ⚠ Itt most NEM dobjuk tovább, csak logolunk és 0-át használunk
+                Console.WriteLine($"[WARN] Ratings lekérdezés sikertelen (userId={userId}): {ex.Message}");
+                // average = 0; count = 0;  // már úgyis 0-ra vannak inicializálva
+            }
 
             return new UserPublicDto
             {
                 Id = user.Id,
                 UserName = user.Username,
-                Email = user.Email,               // ha nem publikus: vedd ki
-                PhoneNumber = user.PhoneNumber ?? string.Empty, // ha nem publikus: vedd ki
-                //City = user.City ?? string.Empty,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
                 AdsCount = adsCount,
-                AverageRating = rating.Average,
-                RatingCount = rating.Count
+                AverageRating = average,
+                RatingCount = count
             };
         }
+
 
 
 

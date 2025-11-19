@@ -88,3 +88,20 @@
 .ad-card-button:hover {
   background: #5568d3;
 }
+.ad-card-seller {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  color: #444;
+}
+
+.seller-link {
+  font-weight: 600;
+  color: #667eea;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.seller-link:hover {
+  color: #5568d3;
+}

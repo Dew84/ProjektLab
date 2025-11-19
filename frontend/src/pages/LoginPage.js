@@ -2,9 +2,11 @@ import { useState } from 'react';
 import authService from '../services/authService';
 import userService from '../services/userService';
 import './LoginPage.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage(props) {
   const { onLoginSuccess, switchToRegister, setUser, setCurrentPage } = props;
+  const navigate = useNavigate();
 
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
@@ -12,10 +14,15 @@ export default function LoginPage(props) {
   const [loading, setLoading]   = useState(false);
 
   const afterSuccess = (user) => {
-    if (typeof onLoginSuccess === 'function') return onLoginSuccess(user);
-    if (typeof setUser === 'function') setUser(user);
-    if (typeof setCurrentPage === 'function') setCurrentPage('home');
+    if (typeof onLoginSuccess === 'function') {
+      onLoginSuccess(user);
+    }
+    if (typeof setUser === 'function') {
+      setUser(user);
+    }
+    navigate('/'); // <-- főoldalra dob
   };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();

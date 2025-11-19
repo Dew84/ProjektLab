@@ -7,6 +7,7 @@ import AdImageGallery from "../components/AdImageGallery";
 import { formatDateTime } from "../services/adService";
 import "./AdDetailPage.css";
 
+
 function AdDetailPage() {
   const { id } = useParams();
   const [pictures, setPictures] = useState([]);
@@ -83,7 +84,7 @@ function AdDetailPage() {
               {user ? (
                 <span
                   className="username-link"
-                   onClick={() => navigate("/userProfile", { state: { user } })}
+                   onClick={() => navigate("/users/public/${user.id}", { state: { user } })}
                 >
                   {user.userName}
                 </span>

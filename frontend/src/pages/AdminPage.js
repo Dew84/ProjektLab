@@ -120,32 +120,33 @@ export default function AdminPage({ user, onBackHome, setCurrentPage }) {
             setSelectedUserId(userId);
             setFilterLoading(true);
             setAError('');
-            try {
-                // 1) Ideális szerveroldali endpoint:
-                //    GET /api/ads?userId=<id>
-                const token = localStorage.getItem('token') || '';
-                const resp = await fetch(`/api/ads?userId=${encodeURIComponent(userId)}`, {
-                    headers: token ? { Authorization: `Bearer ${token}` } : {},
-                });
 
-                if (resp.ok) {
-                    const data = await resp.json();
-                    const items = Array.isArray(data) ? data : data?.items ?? data?.data ?? [];
-                    setAds(items);
-                } else {
-                    // 2) Fallback: ha nincs ilyen endpoint, lekérjük az összeset és kliens oldalon szűrünk
-                    const list = await adService.getAds();
-                    const items = Array.isArray(list) ? list : list?.items ?? list?.data ?? [];
-                    setAds(items.filter((a) => String(a.userId) === String(userId)));
-                }
+            try {
+                const list = await adService.getAds();
+                const items = Array.isArray(list) ? list : list?.items ?? list?.data ?? [];
+
+
+
+                setAds(
+                    items.filter((a) =>
+                        String(
+                            a.userId ??
+                            a.ownerId ??
+                            a.sellerId ??
+                            a.user?.id
+                        ) === String(userId)
+                    )
+                );
             } catch (e) {
+                console.error(e);
                 setAError('Nem sikerült a felhasználó hirdetéseit betölteni.');
             } finally {
                 setFilterLoading(false);
             }
         },
-        [setAds]
+        []
     );
+
 
     // ÚJ: Szűrés törlése – vissza az összes hirdetéshez
     const clearUserFilter = useCallback(async () => {
@@ -233,7 +234,7 @@ export default function AdminPage({ user, onBackHome, setCurrentPage }) {
                                             </button>
                                             <button
                                                 className="btn outline"
-                                                onClick={() => navigate(`/users/${u.id}`)}
+                                                onClick={() => navigate(`/users/public/${u.id}`)}
                                                 title="Publikus profil megnyitása"
                                             >
                                                 Profil

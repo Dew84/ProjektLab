@@ -131,69 +131,70 @@ function Navbar({ user, setUser, setSelectedAdId }) {
                   </button>
                 </>
             ) : (
-                <div className="user-info" ref={menuRef}>
+                <div className="user-info">
                   <span>Üdv, </span>
 
-                  {/* Profil / dropdown */}
-                  <button
-                      className="navbar-button profile-btn"
-                      onClick={() => setMenuOpen((prev) => !prev)}
-                  >
-                    <UserIcon
-                        size={18}
-                        style={{ marginRight: '6px', verticalAlign: 'middle' }}
-                    />
-                    {user?.userName || user?.name || ''} ▼
-                  </button>
+                  {/* Profil gomb + dropdown külön konténerben */}
+                  <div className="user-menu" ref={menuRef}>
+                    <button
+                        className="navbar-button profile-btn"
+                        onClick={() => setMenuOpen((prev) => !prev)}
+                    >
+                      <UserIcon
+                          size={18}
+                          style={{ marginRight: '6px', verticalAlign: 'middle' }}
+                      />
+                      {user?.userName || user?.name || ''} ▼
+                    </button>
 
-                  {/* Üzenetek gomb badge-dzsel */}
-                  <button
-                      className="navbar-button notification-btn"
-                      onClick={handleConversations}
-                  >
-                    Üzenetek
-                    {hasNewMessages && <span className="badge">!</span>}
-                  </button>
+                    {menuOpen && (
+                        <div className="dropdown-menu">
+                          <button
+                              onClick={() => {
+                                navigate('/ads/own');
+                                setMenuOpen(false);
+                              }}
+                          >
+                            Hirdetéseim
+                          </button>
+                          <button
+                              className="messages-dropdown-btn"
+                              onClick={() => {
+                                handleConversations();
+                                setMenuOpen(false);
+                              }}
+                          >
+                            Üzenetek
+                            {hasNewMessages && <span className="badge-inline">•</span>}
+                          </button>
+                          <button
+                              onClick={() => {
+                                navigate('/profile');
+                                setMenuOpen(false);
+                              }}
+                          >
+                            Saját profil
+                          </button>
+                          {isAdmin && (
+                              <button
+                                  onClick={() => {
+                                    handleAdminPanel();
+                                    setMenuOpen(false);
+                                  }}
+                              >
+                                Admin feladatok
+                              </button>
+                          )}
+                        </div>
+                    )}
+                  </div>
 
-                  {/* Kijelentkezés */}
                   <button
                       className="navbar-button logout-btn"
                       onClick={handleLogout}
                   >
                     Kijelentkezés
                   </button>
-
-                  {/* Legördülő menü */}
-                  {menuOpen && (
-                      <div className="dropdown-menu">
-                        <button
-                            onClick={() => {
-                              navigate('/ads/own');
-                              setMenuOpen(false);
-                            }}
-                        >
-                          Hirdetéseim
-                        </button>
-                        <button
-                            onClick={() => {
-                              navigate('/profile');
-                              setMenuOpen(false);
-                            }}
-                        >
-                          Saját profil
-                        </button>
-                        {isAdmin && (
-                            <button
-                                onClick={() => {
-                                  handleAdminPanel();
-                                  setMenuOpen(false);
-                                }}
-                            >
-                              Admin feladatok
-                            </button>
-                        )}
-                      </div>
-                  )}
                 </div>
             )}
           </div>
