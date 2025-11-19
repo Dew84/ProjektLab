@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import adService from '../services/adService';
 import api from '../services/api';
+import './PublicProfilePage.css';
 
 export default function PublicProfilePage({ setSelectedAdId }) {
-    // /users/public/:userId -> param string, konvertáljuk numberré
     const { userId: userIdParam } = useParams();
     const userId = Number(userIdParam);
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Ki a bejelentkezett felhasználó?
+    // Bejelentkezett user
     const me = (() => {
         try {
             return JSON.parse(localStorage.getItem('user'));
@@ -30,7 +30,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
 
     const canRate = !!me && me.id !== userId;
 
-    // === 1) PUBLIC USER INFO BETÖLTÉSE ===
+    // === 1) PUBLIC USER INFO ===
     useEffect(() => {
         let alive = true;
 
@@ -39,8 +39,8 @@ export default function PublicProfilePage({ setSelectedAdId }) {
                 setLoading(true);
 
                 const res = await api.get(`/users/public/${userId}`);
-                const data = res.data;
                 if (!alive) return;
+                const data = res.data;
 
                 setUserData(data);
                 setAvgRating(Number(data.averageRating ?? 0));
@@ -53,19 +53,16 @@ export default function PublicProfilePage({ setSelectedAdId }) {
             }
         }
 
-        if (!Number.isNaN(userId)) {
-            loadUser();
-        } else {
+        if (!Number.isNaN(userId)) loadUser();
+        else {
             setError('Érvénytelen felhasználó azonosító.');
             setLoading(false);
         }
 
-        return () => {
-            alive = false;
-        };
+        return () => { alive = false; };
     }, [userId]);
 
-    // === 2) USER HIRDETÉSEINEK BETÖLTÉSE ===
+    // === 2) ADS LIST ===
     useEffect(() => {
         let alive = true;
 
@@ -84,28 +81,22 @@ export default function PublicProfilePage({ setSelectedAdId }) {
             }
         }
 
-        if (!Number.isNaN(userId)) {
-            loadAds();
-        }
+        if (!Number.isNaN(userId)) loadAds();
 
-        return () => {
-            alive = false;
-        };
+        return () => { alive = false; };
     }, [userId, pageSize]);
 
-    // === 3) ÉRTÉKELÉS KÜLDÉSE ===
+    // === 3) RATE USER ===
     const handleRate = async (value) => {
         if (!canRate) return;
 
         try {
-            // Token az api instance-ben van beállítva (authService.login/register után)
             await api.post('/ratings', {
                 ratedUserId: userId,
                 value,
             });
 
-            const summaryRes = await api.get(`/ratings/${userId}/summary`);
-            const summary = summaryRes.data;
+            const summary = (await api.get(`/ratings/${userId}/summary`)).data;
 
             setAvgRating(Number(summary.average ?? 0));
             setRatingCount(Number(summary.count ?? 0));
@@ -116,126 +107,190 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         }
     };
 
-    if (loading) return <div>Betöltés…</div>;
-    if (error) return <div>{error}</div>;
+    // === LOADING / ERROR ===
+    if (loading) {
+        return (
+            <div className="user-profile-page center">
+                <div className="loader" />
+                <p>Betöltés…</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="user-profile-page center">
+                <div className="error-card">
+                    <h3>Hoppá!</h3>
+                    <p>{error}</p>
+                </div>
+            </div>
+        );
+    }
+
     if (!userData) return null;
 
+    // === RENDER ===
     return (
         <div className="user-profile-page">
-            {/* PROFIL FEJLÉC */}
-            <div className="profile-header">
-                <div className="profile-info">
-                    <h2>{userData.userName || userData.name || 'Felhasználó'}</h2>
-                    <p>Cím: {userData.address || '—'}</p>
-                    <p>Telefonszám: {userData.phoneNumber || '—'}</p>
-                </div>
 
-                <div className="profile-actions">
-                    {me && me.id !== userData.id && (
-                        <button
-                            className="btn-outline"
-                            onClick={() => navigate(`/chat/${userData.id}`)}
-                        >
-                            Beszélgetés indítása
-                        </button>
-                    )}
-                </div>
-            </div>
+            {/* === PROFILE CARD === */}
+            <div className="profile-card profile-card-wide">
+                <div className="profile-header">
+                    <div className="avatar-circle">
+                        {userData.userName?.charAt(0)?.toUpperCase() || 'F'}
+                    </div>
 
-            {/* ÉRTÉKELÉS ÖSSZEGZÉS */}
-            <div
-                style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    margin: '16px 0',
-                }}
-            >
-                <strong>Értékelés:</strong>
-                <span title={`${avgRating.toFixed(1)} / 5`}>
-          {Array.from({ length: 5 }).map((_, i) => {
-              const filled = i < Math.round(avgRating - 0.001);
-              return (
-                  <span
-                      key={i}
-                      style={{ color: filled ? '#FFC107' : '#ccc', fontSize: 20 }}
-                  >
-                ★
-              </span>
-              );
-          })}
-        </span>
-                <span>({ratingCount})</span>
-            </div>
+                    <div className="profile-info">
+                        <h2>{userData.userName || userData.name || 'Felhasználó'}</h2>
+                        <p className="profile-subtitle">
+                            Cím: <span>{userData.address || '—'}</span>
+                        </p>
+                        <p className="profile-subtitle">
+                            Telefonszám: <span>{userData.phoneNumber || '—'}</span>
+                        </p>
+                    </div>
 
-            {/* ÉRTÉKELÉS LEADÁSA */}
-            {canRate && (
-                <div style={{ marginBottom: 24 }}>
-                    <div style={{ marginBottom: 6 }}>Értékeld a felhasználót:</div>
-
-                    {Array.from({ length: 5 }).map((_, i) => {
-                        const index = i + 1;
-                        const active = index <= (hover || myRating);
-
-                        return (
-                            <span
-                                key={index}
-                                style={{
-                                    color: active ? '#FF9800' : '#bbb',
-                                    fontSize: 28,
-                                    cursor: 'pointer',
-                                }}
-                                onMouseEnter={() => setHover(index)}
-                                onMouseLeave={() => setHover(0)}
-                                onClick={() => handleRate(index)}
+                    <div className="profile-actions">
+                        {me && me.id !== userData.id && (
+                            <button
+                                className="btn primary"
+                                onClick={() => navigate(`/chat/${userData.id}`)}
                             >
-                ★
-              </span>
-                        );
-                    })}
-
-                    {myRating > 0 && (
-                        <span style={{ marginLeft: 8 }}>({myRating}/5)</span>
-                    )}
+                                💬 Beszélgetés indítása
+                            </button>
+                        )}
+                    </div>
                 </div>
-            )}
 
-            <hr />
+                {/* RATING SUMMARY */}
+                <div className="rating-summary">
+                    <div className="rating-value">
+                        <span className="rating-number">{avgRating.toFixed(1)}</span>
+                        <span className="rating-max">/ 5</span>
+                    </div>
 
-            {/* HIRDETÉSEK */}
-            <div className="ads-section">
+                    <div className="rating-stars">
+                        {Array.from({ length: 5 }).map((_, i) => {
+                            const filled = i < Math.round(avgRating - 0.001);
+                            return (
+                                <span key={i} className={filled ? 'star filled' : 'star'}>
+                                    ★
+                                </span>
+                            );
+                        })}
+                    </div>
+
+                    <div className="rating-count">
+                        {ratingCount > 0 ? `${ratingCount} értékelés` : 'Még nincs értékelés'}
+                    </div>
+                </div>
+
+                {/* RATING INPUT */}
+                {canRate && (
+                    <div className="rating-input">
+                        <div className="rating-input-label">
+                            Értékeld a felhasználót:
+                        </div>
+
+                        <div className="rating-input-stars">
+                            {Array.from({ length: 5 }).map((_, i) => {
+                                const index = i + 1;
+                                const active = index <= (hover || myRating);
+
+                                return (
+                                    <span
+                                        key={index}
+                                        className={active ? 'star big filled' : 'star big'}
+                                        onMouseEnter={() => setHover(index)}
+                                        onMouseLeave={() => setHover(0)}
+                                        onClick={() => handleRate(index)}
+                                    >
+                                        ★
+                                    </span>
+                                );
+                            })}
+                        </div>
+
+                        {myRating > 0 && (
+                            <span className="rating-my">
+                                Saját értékelésed: {myRating}/5
+                            </span>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* === ADS GRID === */}
+            <div className="ads-card">
                 <div className="ads-header">
-                    <h3>Összes hirdetés ({ads.length} db)</h3>
-                    <select
-                        value={pageSize}
-                        onChange={(e) => setPageSize(Number(e.target.value))}
-                    >
-                        {[10, 20, 50].map((size) => (
-                            <option key={size} value={size}>
-                                {size}/oldal
-                            </option>
-                        ))}
-                    </select>
+                    <div>
+                        <h3>Hirdetések</h3>
+                        <span className="ads-count">{ads.length} aktív hirdetés</span>
+                    </div>
+
+                    <div className="ads-page-size">
+                        <label>
+                            Elem / oldal:{' '}
+                            <select
+                                value={pageSize}
+                                onChange={(e) => setPageSize(Number(e.target.value))}
+                            >
+                                {[10, 20, 50].map((size) => (
+                                    <option key={size} value={size}>{size}</option>
+                                ))}
+                            </select>
+                        </label>
+                    </div>
                 </div>
 
-                <ul>
-                    {ads.map((ad) => (
-                        <li key={ad.id} style={{ marginBottom: 8 }}>
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    if (typeof setSelectedAdId === 'function') {
-                                        setSelectedAdId(ad.id);
-                                    }
-                                    navigate(`/ads/${ad.id}`);
-                                }}
-                            >
-                                {ad.title}
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+                {ads.length === 0 ? (
+                    <div className="ads-empty">Ennek a felhasználónak nincs hirdetése.</div>
+                ) : (
+                    <div className="ads-grid">
+                        {ads.map((ad) => {
+                            const hasImage = ad.pictureUrls && ad.pictureUrls.length > 0;
+
+                            // === Képek URL-je ===
+                            let thumbUrl = null;
+
+                            if (hasImage) {
+                                const pic = ad.pictureUrls[0];
+
+                                if (pic.startsWith('http')) {
+                                    thumbUrl = pic;
+                                } else {
+                                    const apiBase = import.meta.env.VITE_API_BASE_URL || '';
+                                    const base = apiBase.replace(/\/api\/?$/, '');
+                                    thumbUrl = `${base}/${pic.replace(/^\/+/, '')}`;
+                                }
+                            }
+
+                            return (
+                                <div
+                                    key={ad.id}
+                                    className="ad-card"
+                                    onClick={() => navigate(`/ads/${ad.id}`)}
+                                >
+                                    <div className="ad-card-image">
+                                        {thumbUrl ? (
+                                            <img src={thumbUrl} alt={ad.title} />
+                                        ) : (
+                                            <div className="ad-card-placeholder">📦</div>
+                                        )}
+                                    </div>
+
+                                    <div className="ad-card-body">
+                                        <h4 className="ad-card-title">{ad.title}</h4>
+                                        {ad.price != null && (
+                                            <div className="ad-card-price">{ad.price} Ft</div>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
             </div>
         </div>
     );
