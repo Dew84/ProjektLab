@@ -30,7 +30,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
 
     const canRate = !!me && me.id !== userId;
 
-    // === 1) PUBLIC USER INFO ===
+
     useEffect(() => {
         let alive = true;
 
@@ -62,7 +62,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         return () => { alive = false; };
     }, [userId]);
 
-    // === 2) ADS LIST ===
+
     useEffect(() => {
         let alive = true;
 
@@ -86,7 +86,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
         return () => { alive = false; };
     }, [userId, pageSize]);
 
-    // === 3) RATE USER ===
+
     const handleRate = async (value) => {
         if (!canRate) return;
 
@@ -130,11 +130,11 @@ export default function PublicProfilePage({ setSelectedAdId }) {
 
     if (!userData) return null;
 
-    // === RENDER ===
+
     return (
         <div className="user-profile-page">
 
-            {/* === PROFILE CARD === */}
+
             <div className="profile-card profile-card-wide">
                 <div className="profile-header">
                     <div className="avatar-circle">
@@ -221,7 +221,7 @@ export default function PublicProfilePage({ setSelectedAdId }) {
                 )}
             </div>
 
-            {/* === ADS GRID === */}
+
             <div className="ads-card">
                 <div className="ads-header">
                     <div>

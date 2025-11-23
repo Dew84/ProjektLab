@@ -1,37 +1,27 @@
 // src/pages/ProfilePage.js
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ÚJ
+import { useNavigate } from 'react-router-dom';
 import userService from '../services/userService';
 import './ProfilePage.css';
 
-export default function ProfilePage(props) {
-    const { onBackHome, setCurrentPage } = props;
-    const navigate = useNavigate(); // ÚJ
+export default function ProfilePage({ onBackHome, setCurrentPage }) {
+    const navigate = useNavigate();
 
     const [userName, setUserName] = useState('');
-    const [email, setEmail]       = useState('');
-    const [loading, setLoading]   = useState(true);
-    const [saving, setSaving]     = useState(false);
-    const [info, setInfo]         = useState('');
-    const [error, setError]       = useState('');
+    const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [address, setAddress] = useState('');
+
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+    const [info, setInfo] = useState('');
+    const [error, setError] = useState('');
 
     const goHome = () => {
-        // 1) Ha van explicit callback:
         if (typeof onBackHome === 'function') return onBackHome();
-
-        // 2) Ha valahol még state-alapú navigációt használsz:
-        if (typeof setCurrentPage === 'function') return setCurrentPage('home'); // NEM 'goHome'!
-
-        // 3) Alapértelmezett: Routeres navigáció a főoldalra:
+        if (typeof setCurrentPage === 'function') return setCurrentPage('home');
         sessionStorage.setItem('keepHomeCategories', 'true');
-        navigate('/', { state: { fromNavigation: true } });
-    };
-
-    const goOwnAds = () => {
-        // Ha van state-alapú lapozás:
-        if (typeof setCurrentPage === 'function') return setCurrentPage('ownAds');
-        // Egyébként router:
-        navigate('/ads/own');
+        navigate('/');
     };
 
     useEffect(() => {
@@ -42,6 +32,8 @@ export default function ProfilePage(props) {
                 const me = await userService.me();
                 setUserName(me.userName || '');
                 setEmail(me.email || '');
+                setPhone(me.phoneNumber || '');
+                setAddress(me.address || '');
             } catch {
                 setError('Nem sikerült betölteni a profilt.');
             } finally {
@@ -55,30 +47,25 @@ export default function ProfilePage(props) {
         setInfo('');
         setError('');
         setSaving(true);
+
         try {
-            const updated = await userService.updateMe({
+            await userService.updateMe({
                 userName: userName.trim(),
                 email: email.trim(),
+                phoneNumber: phone.trim(),
+                address: address.trim(),
             });
 
-            // localStorage frissítés, hogy a Navbar/Home is azonnal az újat mutassa
-            try {
-                const current = JSON.parse(localStorage.getItem('user') || '{}');
-                const merged = {
-                    ...current,
-                    ...(updated || {}),
-                    userName: (updated?.userName ?? userName).trim(),
-                    name: (updated?.userName ?? userName).trim(),
-                    email: (updated?.email ?? email).trim(),
-                };
-                localStorage.setItem('user', JSON.stringify(merged));
-            } catch {
-                localStorage.setItem('user', JSON.stringify({
-                    userName: userName.trim(),
-                    name: userName.trim(),
-                    email: email.trim(),
-                }));
-            }
+            // localStorage frissítése
+            const updatedUser = {
+                userName: userName.trim(),
+                name: userName.trim(),
+                email: email.trim(),
+                phoneNumber: phone.trim(),
+                address: address.trim(),
+            };
+
+            localStorage.setItem('user', JSON.stringify(updatedUser));
 
             setInfo('Profil frissítve.');
         } catch (e2) {
@@ -116,6 +103,22 @@ export default function ProfilePage(props) {
                         minLength={3}
                         required
                     />
+
+                    <input
+                        type="text"
+                        placeholder="Telefonszám"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                    />
+
+                    <input
+                        type="text"
+                        placeholder="Cím"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                    />
+
+
                     <input
                         type="email"
                         placeholder="E-mail"
@@ -130,9 +133,9 @@ export default function ProfilePage(props) {
                 </form>
 
                 {info  && <p style={{ color: 'green', marginTop: 8 }}>{info}</p>}
-                {error && <p style={{ color: 'red',   marginTop: 8 }}>{error}</p>}
+                {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
 
-                <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+                <div style={{ marginTop: 12 }}>
                     <button type="button" onClick={goHome}>
                         Vissza a főoldalra
                     </button>

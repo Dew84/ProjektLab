@@ -385,12 +385,6 @@ FodyWeavers.xsd
 *.msm
 *.msp
 
-/TradeByte/Dtos/Ratings/CreateRatingDto.cs
-/TradeByte/Dtos/Ratings/RatingDto.cs
-/TradeByte/Services/Interfaces/IRatingService.cs
-/TradeByte/Models/Rating.cs
-/TradeByte/Services/Ratingservice.cs
-
 
 # Frontend
 frontend/node_modules/

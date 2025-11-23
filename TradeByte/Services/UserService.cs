@@ -58,9 +58,9 @@ namespace TradeByte.Services
             }
             catch (SqliteException ex)
             {
-                // ⚠ Itt most NEM dobjuk tovább, csak logolunk és 0-át használunk
+
                 Console.WriteLine($"[WARN] Ratings lekérdezés sikertelen (userId={userId}): {ex.Message}");
-                // average = 0; count = 0;  // már úgyis 0-ra vannak inicializálva
+                // average = 0; count = 0;
             }
 
             return new UserPublicDto
@@ -98,22 +98,34 @@ namespace TradeByte.Services
 
         public async Task<bool> UpdateMeAsync(UpdateUserDto dto, CancellationToken ct = default)
         {
-            if (dto is null) throw new ArgumentNullException(nameof(dto));
+            if (dto is null)
+                throw new ArgumentNullException(nameof(dto));
 
             var me = await _users.GetByIdAsync(CurrentUserId, ct);
-            if (me is null) return false;
+            if (me is null)
+                return false;
 
-            // Egyszerű frissítés – igazítsd a tényleges mezőkhöz!
+            // Felhasználónév
             if (!string.IsNullOrWhiteSpace(dto.UserName))
                 me.Username = dto.UserName.Trim();
 
+            // Email
             if (!string.IsNullOrWhiteSpace(dto.Email))
                 me.Email = dto.Email.Trim();
+
+            // Telefonszám
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber))
+                me.PhoneNumber = dto.PhoneNumber.Trim();
+
+            // Cím
+            if (!string.IsNullOrWhiteSpace(dto.Address))
+                me.Address = dto.Address.Trim();
 
             await _users.UpdateAsync(me, ct);
             await _uow.SaveChangesAsync(ct);
             return true;
         }
+
 
         public async Task<UserDto?> GetByIdAsync(int userId, CancellationToken ct = default)
         {
