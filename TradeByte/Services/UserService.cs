@@ -68,6 +68,7 @@ namespace TradeByte.Services
                 Id = user.Id,
                 UserName = user.Username,
                 Email = user.Email,
+                Address = user.Address,
                 PhoneNumber = user.PhoneNumber ?? string.Empty,
                 AdsCount = adsCount,
                 AverageRating = average,
@@ -179,11 +180,14 @@ namespace TradeByte.Services
 
 
         private static UserDto MapToDto(User u) => new UserDto
-        {
-            Id = u.Id,
-            UserName = u.Username,
-            Email = u.Email,
-            Role = u.Role?.Name.ToString() ?? "User"
-        };
+         {
+             Id = u.Id,
+             UserName = u.Username,
+             Email = u.Email,
+             PhoneNumber = u.PhoneNumber,
+             Address = u.Address,
+             Role = u.Role?.Name.ToString() ?? "User"
+         };
+
     }
 }

@@ -1,313 +1,214 @@
+
+
+:root {
+    --primary-color: #5d53c3;
+    --primary-dark: #7a68c0;
+    --background-light: #f4f6fa;
+    --text-dark: #1f2937;
+    --text-subtle: #6b7280;
+    --card-shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.06), 0 3px 6px rgba(0, 0, 0, 0.03);
+    --card-radius: 20px;
+    --rating-star-color: #ffc107;
+}
+
+body {
+    background-color: var(--background-light);
+}
+
 .user-profile-page {
+    width: 100%;
     max-width: 1100px;
-    margin: 24px auto;
-    padding: 16px;
+    margin: 40px auto 60px;
+    padding: 0 24px;
+    box-sizing: border-box;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.user-profile-page.center {
-    min-height: 50vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.loader {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-top-color: #667eea;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 8px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
+/* Betöltés / hiba állapot */
+.loader { border-top-color: var(--primary-color); }
 .error-card {
-    background: #ffe6e6;
-    border: 1px solid #ffb3b3;
-    border-radius: 12px;
-    padding: 16px 20px;
-    max-width: 400px;
-    text-align: center;
-}
-
-/* Grid a profil + hirdetés kártyának */
-
-.profile-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr);
-    gap: 24px;
-}
-
-@media (max-width: 800px) {
-    .profile-layout {
-        grid-template-columns: 1fr;
-    }
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #b91c1c;
+    border-radius: var(--card-radius);
+    padding: 20px 25px;
 }
 
 
 
 .profile-card,
-
-.profile-card-wide {
-    margin-bottom: 24px;
-}
-
-
 .ads-card {
+    width: 100%;
     background: #ffffff;
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    border-radius: var(--card-radius);
+    padding: 30px 35px;
+    box-shadow: var(--card-shadow-soft);
+    margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
-/* Profil header + avatar */
+/* === PROFIL KÁRTYA CENTÍROZÁSA === */
+.profile-card {
+    max-width: 700px; /* Max szélesség beállítása a szimmetria érdekében */
+    margin-left: auto; /* Centírozás */
+    margin-right: auto; /* Centírozás */
+    padding: 40px 40px; /* Nagyobb belső tér a központi blokkban */
+}
+
+
 
 .profile-header {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: center;
-    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column; /* Egymás alá rendezés a centírozáshoz */
+    align-items: center; /* Középre igazítás */
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #f3f4f6;
+    text-align: center; /* Szöveg középre */
 }
 
 .avatar-circle {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: 600;
+    width: 90px; /* Még nagyobb avatar a fókusz érdekében */
+    height: 90px;
+    font-size: 40px;
+    font-weight: 500;
+    box-shadow: 0 0 0 5px #ffffff, 0 0 0 8px var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+}
+
+.profile-info {
+    flex-grow: 1;
 }
 
 .profile-info h2 {
-    margin: 0 0 4px;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
 }
 
 .profile-subtitle {
-    margin: 2px 0;
-    font-size: 0.9rem;
-    color: #666;
-}
-
-.profile-subtitle span {
-    font-weight: 500;
-    color: #333;
+    font-size: 1rem;
+    color: var(--text-subtle);
 }
 
 .profile-actions {
-    display: flex;
-    justify-content: flex-end;
+    margin-top: 15px; /* Távolság a profil adatoktól */
 }
 
 .btn.primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border: none;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: transform 0.1s ease, box-shadow 0.1s ease;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    padding: 12px 28px;
+    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(93, 83, 195, 0.4);
 }
 
-.btn.primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
-}
 
-/* Értékelés összegzés (kis csillagok) */
 
 .rating-summary {
-    border-top: 1px solid #eee;
-    margin-top: 12px;
-    padding-top: 12px;
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 12px;
+    display: flex;
+    flex-direction: column; /* Középre rendezés */
     align-items: center;
+    gap: 10px;
+    padding: 10px 0;
 }
 
 .rating-value {
-    display: flex;
-    align-items: baseline;
-    gap: 2px;
+    gap: 8px;
 }
 
 .rating-number {
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 3rem; /* Még hangsúlyosabb szám */
+    font-weight: 800;
+    color: var(--primary-color);
 }
 
 .rating-max {
-    font-size: 0.9rem;
-    color: #777;
+    font-size: 1.2rem;
 }
 
 .rating-stars {
-    display: flex;
-    gap: 4px;
+    gap: 6px;
 }
 
 .star {
-    font-size: 20px;
-    color: #ccc;
+    font-size: 28px;
 }
 
 .star.filled {
-    color: #ffc107;
+    color: var(--rating-star-color);
 }
 
 .rating-count {
-    font-size: 0.9rem;
-    color: #555;
+    font-size: 1rem;
 }
+
 
 
 
 .rating-input {
-    margin-top: 18px;
-    padding-top: 12px;
-    border-top: 1px dashed #eee;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px dashed #e5e7eb;
+    display: flex;
+    flex-direction: column; /* Középre rendezés */
+    align-items: center;
+    gap: 15px;
+    text-align: center;
 }
 
 .rating-input-label {
-    margin-bottom: 8px;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--text-dark);
 }
 
 .rating-input-stars {
     display: flex;
-    gap: 6px;
+    gap: 15px;
 }
 
 .star.big {
-    font-size: 30px;
-    cursor: pointer;
-    color: #bbb;
-    transition: transform 0.12s ease, color 0.12s ease, text-shadow 0.12s ease;
+    font-size: 40px; /* Nagyobb csillagok */
 }
 
+.star.big:hover,
 .star.big.filled {
-    color: #ffb300;
-}
-
-.star.big:hover {
-    transform: scale(1.25) translateY(-1px);
-    color: #ffc107;
-    text-shadow: 0 0 6px rgba(255, 193, 7, 0.7);
+    color: var(--rating-star-color);
+    transform: scale(1.15);
+    text-shadow: 0 0 12px rgba(255, 193, 7, 0.9);
 }
 
 .rating-my {
-    margin-top: 6px;
-    display: inline-block;
-    font-size: 0.9rem;
-    color: #555;
+    font-style: italic;
 }
 
 
 
-.ads-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
+
+.ads-card {
+    /* Az ads-card a 100% szélességen marad, hogy kiemelje a centrált profilkártyát */
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.ads-header h3 {
-    margin: 0;
-}
 
-.ads-count {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-.ads-page-size select {
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid #ddd;
-}
-
-.ads-empty {
-    padding: 16px;
-    text-align: center;
-    color: #666;
-    font-size: 0.95rem;
-}
 
 .ads-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
 }
 
+@media (max-width: 768px) {
+    .profile-card {
+        max-width: 100%;
+        padding: 25px 20px;
+    }
 
 
-.ad-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
-    overflow: hidden;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
-}
-
-.ad-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
-}
-
-.ad-card-image {
-    width: 100%;
-    height: 150px;
-    background: #f5f5f5;
-    overflow: hidden;
-}
-
-.ad-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.ad-card-placeholder {
-    width: 100%;
-    height: 100%;
-    font-size: 2.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #ccc;
-}
-
-.ad-card-body {
-    padding: 10px 12px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.ad-card-title {
-    margin: 0;
-    font-size: 0.98rem;
-    font-weight: 500;
-}
-
-.ad-card-price {
-    font-weight: 600;
-    color: #3c7c2b;
-    font-size: 0.95rem;
+    .profile-header,
+    .rating-summary,
+    .rating-input {
+        text-align: center;
+        align-items: center;
+    }
 }

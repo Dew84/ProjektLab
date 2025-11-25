@@ -1,4 +1,3 @@
-// src/pages/ProfilePage.js
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import userService from '../services/userService';
@@ -24,12 +23,14 @@ export default function ProfilePage({ onBackHome, setCurrentPage }) {
         navigate('/');
     };
 
+    // PROFIL BETÖLTÉSE
     useEffect(() => {
         (async () => {
             setLoading(true);
             setError('');
             try {
                 const me = await userService.me();
+
                 setUserName(me.userName || '');
                 setEmail(me.email || '');
                 setPhone(me.phoneNumber || '');
@@ -42,30 +43,42 @@ export default function ProfilePage({ onBackHome, setCurrentPage }) {
         })();
     }, []);
 
+    // MENTÉS
     const handleSave = async (e) => {
         e.preventDefault();
         setInfo('');
         setError('');
         setSaving(true);
 
+        const payload = {
+            userName: (userName ?? '').trim(),
+            email: (email ?? '').trim(),
+            phoneNumber: (phone ?? '').trim(),
+            address: (address ?? '').trim(),
+        };
+
         try {
-            await userService.updateMe({
-                userName: userName.trim(),
-                email: email.trim(),
-                phoneNumber: phone.trim(),
-                address: address.trim(),
-            });
+            await userService.updateMe(payload);
 
-            // localStorage frissítése
-            const updatedUser = {
-                userName: userName.trim(),
-                name: userName.trim(),
-                email: email.trim(),
-                phoneNumber: phone.trim(),
-                address: address.trim(),
-            };
+            // állapotot meghagyjuk a payload alapján
+            setUserName(payload.userName);
+            setEmail(payload.email);
+            setPhone(payload.phoneNumber);
+            setAddress(payload.address);
 
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            // localStorage frissítése – hogy máshol is látszódjon
+            const stored = JSON.parse(localStorage.getItem('user') || '{}');
+            localStorage.setItem(
+                'user',
+                JSON.stringify({
+                    ...stored,
+                    userName: payload.userName,
+                    email: payload.email,
+                    phoneNumber: payload.phoneNumber,
+                    address: payload.address,
+                    name: payload.userName, // ha valahol name-ként használod
+                })
+            );
 
             setInfo('Profil frissítve.');
         } catch (e2) {
@@ -118,7 +131,6 @@ export default function ProfilePage({ onBackHome, setCurrentPage }) {
                         onChange={(e) => setAddress(e.target.value)}
                     />
 
-
                     <input
                         type="email"
                         placeholder="E-mail"
@@ -132,7 +144,7 @@ export default function ProfilePage({ onBackHome, setCurrentPage }) {
                     </button>
                 </form>
 
-                {info  && <p style={{ color: 'green', marginTop: 8 }}>{info}</p>}
+                {info && <p style={{ color: 'green', marginTop: 8 }}>{info}</p>}
                 {error && <p style={{ color: 'red', marginTop: 8 }}>{error}</p>}
 
                 <div style={{ marginTop: 12 }}>

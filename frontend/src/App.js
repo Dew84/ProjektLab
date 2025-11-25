@@ -26,6 +26,8 @@ function App() {
   const [homeCategories, setHomeCategories] = useState([]);
 
 
+
+
   function RequireAuth({ user, children }) {
     if (!user) return <Navigate to="/login" replace />;
     return children;
@@ -60,6 +62,7 @@ function App() {
                 setSelectedAdId={setSelectedAdId}
                 homeCategories={homeCategories}
                 setHomeCategories={setHomeCategories}
+
               />
             }
           />
@@ -73,7 +76,7 @@ function App() {
                 }
                   />
 
-          <Route path="/users/public/:userId" element={<PublicProfilePage />} />
+
 
           {/* ÚJ: Összes kategória */}
           <Route
