@@ -26,9 +26,9 @@ function AllCategoriesPage() {
     loadCategories();
   }, []);
 
-  const handleCategoryClick = (categoryId) => {
-    navigate(`/ads?categoryId=${categoryId}`);
-  };
+ const handleCategoryClick = (categoryId) => {
+  navigate(`/all-ads?categoryId=${categoryId}`);
+};
 
   if (loading) return <div className="loading">Betöltés...</div>;
   if (error) return <div className="error">{error}</div>;

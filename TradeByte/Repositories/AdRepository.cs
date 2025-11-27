@@ -59,11 +59,11 @@ namespace TradeByte.Repositories
         {
             IQueryable<Classified> q = _context.Classifieds.AsNoTracking();
 
-            // kereső: cím + leírás
+            // kereső: cím + leírás (case-insensitive)
             if (!string.IsNullOrWhiteSpace(query.Keyword))
             {
-                var kw = query.Keyword.Trim();
-                q = q.Where(a => a.Title.Contains(kw) || a.Description.Contains(kw));
+                var kw = query.Keyword.Trim().ToLower();
+                q = q.Where(a => a.Title.ToLower().Contains(kw) || a.Description.ToLower().Contains(kw));
             }
 
             // kategória szűrő (m2m)

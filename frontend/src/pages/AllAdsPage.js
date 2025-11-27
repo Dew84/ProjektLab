@@ -40,19 +40,14 @@ function AllAdsPage() {
         loadCategories();
     }, []);
 
-    // URL paraméterek beolvasása
-    useEffect(() => {
-        const categoryId = searchParams.get('categoryId');
-        if (categoryId) {
-            setSelectedCategory(categoryId);
-            setAppliedCategory(categoryId);
-        }
-    }, [searchParams]);
-
-    // Kezdeti betöltés
-    useEffect(() => {
-        loadAds();
-    }, []);
+    // URL paraméterek beolvasása ÉS kezdeti betöltés
+useEffect(() => {
+  const categoryId = searchParams.get('categoryId');
+  if (categoryId) {
+    setSelectedCategory(categoryId);
+    setAppliedCategory(categoryId);
+  }
+}, [searchParams]);
 
     // Hirdetések betöltése az ALKALMAZOTT szűrők alapján
     useEffect(() => {

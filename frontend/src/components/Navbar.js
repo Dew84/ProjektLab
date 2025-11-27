@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import { User as UserIcon } from 'lucide-react';
 import conversationService from '../services/conversationService';
+import SearchAutocomplete from '../components/SearchAutocomplete';
 
 function Navbar({ user, setUser, setSelectedAdId }) {
-  const [searchQuery, setSearchQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasNewMessages, setHasNewMessages] = useState(false);
 
@@ -56,10 +56,6 @@ function Navbar({ user, setUser, setSelectedAdId }) {
     navigate('/ads/create');
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log('Keresés:', searchQuery);
-  };
 
   const handleConversations = () => {
     if (!user) {
@@ -95,18 +91,7 @@ function Navbar({ user, setUser, setSelectedAdId }) {
               TradeByte
             </h1>
 
-            <form className="navbar-search" onSubmit={handleSearch}>
-              <input
-                  type="text"
-                  placeholder="Keresés..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="search-input"
-              />
-              <button type="submit" className="search-button">
-                🔍 Keresés
-              </button>
-            </form>
+            <SearchAutocomplete />
 
             <button className="navbar-button new-ad-btn" onClick={handleNewAd}>
               ➕ Új hirdetés

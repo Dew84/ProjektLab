@@ -16,7 +16,7 @@ import './App.css';
 import authService from './services/authService';
 import ChatPage from './pages/ChatPage';
 import OwnConversationListPage from './pages/OwnConversationListPage';
-
+import SearchPage from './pages/SearchPage';
 import PublicProfilePage from './pages/PublicProfilePage';
 
 function App() {
@@ -68,13 +68,13 @@ function App() {
           />
           /* ugyanaz mint a my-ads nem?*/
           <Route
-              path="/ads/own"
-              element={
-                <RequireAuth user={user}>
-                  <OwnAdListPage user={user} setSelectedAdId={setSelectedAdId} />
-                </RequireAuth>
-                }
-                  />
+            path="/ads/own"
+            element={
+              <RequireAuth user={user}>
+                <OwnAdListPage user={user} setSelectedAdId={setSelectedAdId} />
+              </RequireAuth>
+            }
+          />
 
 
 
@@ -84,6 +84,12 @@ function App() {
             element={<AllCategoriesPage />}
           />
 
+          {/* Keresési oldal */}
+          <Route
+            path="/search"
+            element={<SearchPage />}
+          />
+          
           {/* ÚJ: Összes hirdetés */}
           <Route
             path="/all-ads"
@@ -118,7 +124,7 @@ function App() {
           />
           <Route
             path="/ads/:id"
-            element={<AdDetailPage/>}
+            element={<AdDetailPage />}
           />
           <Route
             path="/ads/create"
@@ -151,8 +157,8 @@ function App() {
 
 
           <Route
-              path="/users/public/:userId"
-              element={<PublicProfilePage setSelectedAdId={setSelectedAdId} />}
+            path="/users/public/:userId"
+            element={<PublicProfilePage setSelectedAdId={setSelectedAdId} />}
           />
         </Routes>
       </div>

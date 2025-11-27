@@ -46,30 +46,6 @@
   transform: scale(1.05);
 }
 
-/* === KERESŐ === */
-.navbar-search {
-  display: flex;
-  gap: 0.5rem;
-  flex: 1;
-  max-width: 500px;
-}
-
-.search-input {
-  flex: 1;
-  padding: 0.6rem 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  transition: all 0.3s;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: white;
-  background: white;
-}
-
 .navbar-button {
   padding: 0.6rem 1.2rem;
   border: none;
@@ -79,16 +55,6 @@
   cursor: pointer;
   transition: all 0.3s;
   white-space: nowrap;
-}
-
-.search-button {
-  background: white;
-  color: #667eea;
-}
-
-.search-button:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
 }
 
 /* === NAVBAR GOMBOK === */

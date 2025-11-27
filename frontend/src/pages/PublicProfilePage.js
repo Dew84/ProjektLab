@@ -243,7 +243,7 @@ export default function PublicProfilePage() {
                                 if (pic.startsWith("http")) {
                                     thumbUrl = pic;
                                 } else {
-                                    const apiBase = import.meta.env.VITE_API_BASE_URL || "";
+                                    const apiBase = process.env.REACT_APP_API_URL || "";
                                     const base = apiBase.replace(/\/api\/?$/, "");
                                     thumbUrl = `${base}/${pic.replace(/^\/+/, "")}`;
                                 }
