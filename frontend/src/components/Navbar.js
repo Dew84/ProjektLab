@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Navbar.css';
-import { User as UserIcon } from 'lucide-react';
-import conversationService from '../services/conversationService';
-import SearchAutocomplete from '../components/SearchAutocomplete';
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Navbar.css";
+import { User as UserIcon } from "lucide-react";
+import conversationService from "../services/conversationService";
+import SearchAutocomplete from "../components/SearchAutocomplete";
 
 function Navbar({ user, setUser, setSelectedAdId }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,8 +12,9 @@ function Navbar({ user, setUser, setSelectedAdId }) {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  // Új üzenetek lekérdezése
   useEffect(() => {
+    let intervalId;
+
     const checkMessages = async () => {
       if (!user) {
         setHasNewMessages(false);
@@ -21,19 +22,26 @@ function Navbar({ user, setUser, setSelectedAdId }) {
       }
 
       try {
-        const response =
-            await conversationService.getNewMessageExistByUserId(user.id);
-        setHasNewMessages(response.status === 200);
+        const status = await conversationService.getNewMessageExistByUserId(
+          user.id
+        );
+        setHasNewMessages(status === 200);
       } catch (err) {
-        console.error('Nem sikerült lekérdezni az üzeneteket:', err);
+        console.error("Nem sikerült lekérdezni az üzeneteket:", err);
         setHasNewMessages(false);
       }
     };
 
-    checkMessages();
+    checkMessages(); // azonnali ellenőrzés
+
+    intervalId = setInterval(checkMessages, 5000); // 5 mp-ként frissítés
+
+    return () => clearInterval(intervalId);
   }, [user]);
 
-  const isAdmin = String(user?.role ?? '').toLowerCase().includes('admin');
+  const isAdmin = String(user?.role ?? "")
+    .toLowerCase()
+    .includes("admin");
 
   // Dropdown bezárása, ha máshova kattintunk
   useEffect(() => {
@@ -43,148 +51,146 @@ function Navbar({ user, setUser, setSelectedAdId }) {
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleNewAd = () => {
     if (!user) {
-      alert('Bejelentkezés szükséges ehhez!');
+      alert("Bejelentkezés szükséges ehhez!");
       return;
     }
     setSelectedAdId(null);
-    navigate('/ads/create');
+    navigate("/ads/create");
   };
-
 
   const handleConversations = () => {
     if (!user) {
-      alert('Bejelentkezés szükséges ehhez!');
+      alert("Bejelentkezés szükséges ehhez!");
       return;
     }
-    navigate('/conversations');
+    navigate("/conversations");
   };
 
-  const handleLogin = () => navigate('/login');
-  const handleRegister = () => navigate('/register');
-  const handleAdminPanel = () => navigate('/admin');
+  const handleLogin = () => navigate("/login");
+  const handleRegister = () => navigate("/register");
+  const handleAdminPanel = () => navigate("/admin");
 
   const handleLogoClick = () => {
-    console.log('Főoldalra navigálás logo kattintással');
-    sessionStorage.setItem('keepHomeCategories', 'true');
-    navigate('/', { state: { fromNavigation: true } });
+    console.log("Főoldalra navigálás logo kattintással");
+    sessionStorage.setItem("keepHomeCategories", "true");
+    navigate("/", { state: { fromNavigation: true } });
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
-    navigate('/');
+    navigate("/");
   };
 
   return (
-      <nav className="navbar">
-        <div className="navbar-container">
-          {/* BAL OLDAL – logó + kereső + új hirdetés */}
-          <div className="navbar-left">
-            <h1 className="navbar-logo" onClick={handleLogoClick}>
-              TradeByte
-            </h1>
+    <nav className="navbar">
+      <div className="navbar-container">
+        {/* BAL OLDAL – logó + kereső + új hirdetés */}
+        <div className="navbar-left">
+          <h1 className="navbar-logo" onClick={handleLogoClick}>
+            TradeByte
+          </h1>
 
-            <SearchAutocomplete />
+          <SearchAutocomplete />
 
-            <button className="navbar-button new-ad-btn" onClick={handleNewAd}>
-              ➕ Új hirdetés
-            </button>
-          </div>
+          <button className="navbar-button new-ad-btn" onClick={handleNewAd}>
+            ➕ Új hirdetés
+          </button>
+        </div>
 
-          {/* JOBB OLDAL – auth + user menü + üzenetek */}
-          <div className="navbar-right">
-            {!user ? (
-                <>
-                  <button
-                      className="navbar-button register-btn"
-                      onClick={handleRegister}
-                  >
-                    Regisztráció
-                  </button>
-                  <button
-                      className="navbar-button login-btn"
-                      onClick={handleLogin}
-                  >
-                    Bejelentkezés
-                  </button>
-                </>
-            ) : (
-                <div className="user-info">
-                  <span>Üdv, </span>
+        {/* JOBB OLDAL – auth + user menü + üzenetek */}
+        <div className="navbar-right">
+          {!user ? (
+            <>
+              <button
+                className="navbar-button register-btn"
+                onClick={handleRegister}
+              >
+                Regisztráció
+              </button>
+              <button className="navbar-button login-btn" onClick={handleLogin}>
+                Bejelentkezés
+              </button>
+            </>
+          ) : (
+            <div className="user-info">
+              <span>Üdv, </span>
 
-                  {/* Profil gomb + dropdown külön konténerben */}
-                  <div className="user-menu" ref={menuRef}>
+              {/* Profil gomb + dropdown külön konténerben */}
+              <div className="user-menu" ref={menuRef}>
+                <button
+                  className="navbar-button profile-btn"
+                  onClick={() => setMenuOpen((prev) => !prev)}
+                >
+                  <UserIcon
+                    size={18}
+                    style={{ marginRight: "6px", verticalAlign: "middle" }}
+                  />
+                  {user?.userName || user?.name || ""} ▼
+                </button>
+
+                {menuOpen && (
+                  <div className="dropdown-menu">
                     <button
-                        className="navbar-button profile-btn"
-                        onClick={() => setMenuOpen((prev) => !prev)}
+                      onClick={() => {
+                        navigate("/ads/own");
+                        setMenuOpen(false);
+                      }}
                     >
-                      <UserIcon
-                          size={18}
-                          style={{ marginRight: '6px', verticalAlign: 'middle' }}
-                      />
-                      {user?.userName || user?.name || ''} ▼
+                      Hirdetéseim
                     </button>
-
-                    {menuOpen && (
-                        <div className="dropdown-menu">
-                          <button
-                              onClick={() => {
-                                navigate('/ads/own');
-                                setMenuOpen(false);
-                              }}
-                          >
-                            Hirdetéseim
-                          </button>
-                          <button
-                              className="messages-dropdown-btn"
-                              onClick={() => {
-                                handleConversations();
-                                setMenuOpen(false);
-                              }}
-                          >
-                            Üzenetek
-                            {hasNewMessages && <span className="badge-inline">•</span>}
-                          </button>
-                          <button
-                              onClick={() => {
-                                navigate('/profile');
-                                setMenuOpen(false);
-                              }}
-                          >
-                            Saját profil
-                          </button>
-                          {isAdmin && (
-                              <button
-                                  onClick={() => {
-                                    handleAdminPanel();
-                                    setMenuOpen(false);
-                                  }}
-                              >
-                                Admin feladatok
-                              </button>
-                          )}
-                        </div>
+                    <button
+                      className="messages-dropdown-btn"
+                      onClick={() => {
+                        handleConversations();
+                        setMenuOpen(false);
+                      }}
+                    >
+                      Üzenetek
+                      {hasNewMessages && (
+                        <span className="badge-inline"></span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        navigate("/profile");
+                        setMenuOpen(false);
+                      }}
+                    >
+                      Saját profil
+                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => {
+                          handleAdminPanel();
+                          setMenuOpen(false);
+                        }}
+                      >
+                        Admin feladatok
+                      </button>
                     )}
                   </div>
+                )}
+              </div>
 
-                  <button
-                      className="navbar-button logout-btn"
-                      onClick={handleLogout}
-                  >
-                    Kijelentkezés
-                  </button>
-                </div>
-            )}
-          </div>
+              <button
+                className="navbar-button logout-btn"
+                onClick={handleLogout}
+              >
+                Kijelentkezés
+              </button>
+            </div>
+          )}
         </div>
-      </nav>
+      </div>
+    </nav>
   );
 }
 

@@ -48,13 +48,29 @@ namespace TradeByte.Controllers
             }
         }
 
-        [HttpGet("/has-newmessages/{userId}")]
+        [HttpGet("has-newmessages/{userId}")]
         public async Task<IActionResult> GetNewMessageExistByUserId(int userId)
         {
             try
             {
                 bool result = await _conversationService.GetNewMessagesExistAsync(userId);
                 return result ? Ok() : StatusCode(StatusCodes.Status304NotModified);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> GetNewMessageExistByUserId(
+            [FromQuery] int conversationId,
+            [FromQuery] int userId)
+        {
+            try
+            {
+                bool result = await _conversationService.UpdateAllMessageByUserId(conversationId, userId);
+                return Ok();
             }
             catch (ArgumentException ex)
             {

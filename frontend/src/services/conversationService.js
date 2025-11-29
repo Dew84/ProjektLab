@@ -24,10 +24,20 @@ const conversationService = {
   // Van-e a felhasználónak olvasatlan üzenete
   getNewMessageExistByUserId: async (userId) => {
     try {
-      const res = await api.get(`/conversation/has-newmessages${userId}`);
+      const res = await api.get(`/conversation/has-newmessages/${userId}`);
       return res.status;
     } catch (error) {
       console.error('Hiba az új üzenetek lekérésekor:', error.response);
+      throw error;
+    }
+  },
+  // Üzenetek updatelése ha a felhasználó megnézte
+  updateMessagesByUserId: async (conversationId, userId) => {
+    try {
+      const res = await api.put(`/conversation?userId=${userId}&conversationId=${conversationId}`);
+      return res.status;
+    } catch (error) {
+      console.error('Hiba az üzenetek módosításakor:', error.response);
       throw error;
     }
   }

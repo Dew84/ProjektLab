@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using TradeByte.Dtos.Ads;
 using TradeByte.Dtos.Conversation;
@@ -24,12 +25,23 @@ namespace TradeByte.Services
         public async Task<IEnumerable<ConversationDto>> GetAllConversationsByUserIdAsync(int userId, CancellationToken ct = default)
         {
             IEnumerable<Conversation> conversations = await _conversationRepository.GetAllConversationsByUserIdAsync(userId, ct);
-            return conversations.Select(c => new ConversationDto
+
+            List<ConversationDto> result = new();
+            foreach (Conversation c in conversations)
             {
-                Id = c.Id,
-                User1Id = c.User1Id,
-                User2Id = c.User2Id
-            });
+                IEnumerable<Message> messages = await _messageRepository.GetMessagesByConversationId(c.Id, ct);
+                bool hasNewMessage = messages.Any(x => x.IsRead == false && x.SenderId != userId);
+
+                result.Add(new ConversationDto
+                {
+                    Id = c.Id,
+                    User1Id = c.User1Id,
+                    User2Id = c.User2Id,
+                    HasNewMessage = hasNewMessage
+                });
+            }
+
+            return result;
         }
 
         public async Task<ConversationDto?> GetConversationByParticipantsAsync(int user1Id, int user2Id, bool createIfNotExists, CancellationToken ct = default)
@@ -63,13 +75,40 @@ namespace TradeByte.Services
         {
             bool result = false;
             IEnumerable<Conversation> conversations = await _conversationRepository.GetAllConversationsByUserIdAsync(userId, ct);
-            int index = 0;
-            while (!result && conversations.Any())
+            for (int i = 0; i < conversations.Count(); i++)
             {
-                IEnumerable<Message> messages = await _messageRepository.GetMessagesByConversationId(conversations.ElementAt(index).Id);
-                result = messages.Where(x => x.IsRead == false).Any();
+                IEnumerable<Message> messages = await _messageRepository.GetMessagesByConversationId(conversations.ElementAt(i).Id);
+                result = messages.Where(x => x.IsRead == false && x.SenderId != userId).Any();
+                if (result)
+                {
+                    break;
+                }
             }
             return result;
+        }
+
+        public async Task<bool> UpdateAllMessageByUserId(
+            int conversationId,
+            int userId,
+            CancellationToken ct = default)
+        {
+            Conversation conversation = await _conversationRepository
+                .GetConversationByIdAsync(conversationId, ct)
+                    ?? throw new NullReferenceException("A megadott beszélgetés nem található");
+
+            IEnumerable<Message> messages = await _messageRepository.
+                GetMessagesByConversationId(conversation.Id, ct);
+
+            List<Message> relevantMessages = messages.Where(x => x.SenderId == userId).ToList();
+
+            foreach (Message item in relevantMessages)
+            {
+                item.IsRead = true;
+                await _messageRepository.ModifyMessage(item, ct);
+            }
+
+            await _unitOfWork.SaveChangesAsync(ct);
+            return true;
         }
     }
 }

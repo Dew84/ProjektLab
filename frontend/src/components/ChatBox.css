@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin: 0 auto;
 }
 
 /* --- Üzenetek listája --- */
@@ -31,13 +32,13 @@
 
 /* --- Saját üzenet jobb oldalt --- */
 .message.sent {
-  background: #DCF8C6;         /* zöldes világos */
+  background: #bef990;         /* zöldes világos */
   align-self: flex-end;        /* jobb oldalra */
 }
 
 /* --- Kapott üzenet bal oldalt --- */
 .message.received {
-  background: #F1F1F1;
+  background: #9cd5f6;
   align-self: flex-start;      /* bal oldalra */
 }
 
